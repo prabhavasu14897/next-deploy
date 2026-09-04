@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.1)",
+        "createdAt": "2026-09-04T05:51:01.243Z",
+        "reason": "pre-existing .list-divider rule implementing DESIGN.md's documented low-opacity hairline divider spec; translucent-white opacity value, not a new color"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.06)",
+        "createdAt": "2026-09-04T05:51:01.431Z",
+        "reason": "pre-existing .frosted-surface rule implementing DESIGN.md's documented Frosted Azure elevation fill"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.2)",
+        "createdAt": "2026-09-04T05:51:01.600Z",
+        "reason": "pre-existing .frosted-surface rule implementing DESIGN.md's documented Frosted Azure elevation border"
+      }
+    ]
+  }
+}

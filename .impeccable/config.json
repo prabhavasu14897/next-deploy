@@ -1,0 +1,56 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "10px",
+        "createdAt": "2026-09-03T15:33:01.388Z",
+        "reason": "DESIGN.md Typography Hierarchy: Micro label (9.5-11.5px, uppercase where badge-like) covers the PlatformBadge monogram letter"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "14.5px",
+        "createdAt": "2026-09-03T15:33:01.533Z",
+        "reason": "DESIGN.md Typography Hierarchy: Body (13.5-14.5px) explicitly names strip org names"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "9.5px",
+        "createdAt": "2026-09-03T15:33:01.710Z",
+        "reason": "DESIGN.md Components > Chips documents the Current tag at exactly uppercase 9.5px"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "15px",
+        "createdAt": "2026-09-03T15:33:01.862Z",
+        "reason": "DESIGN.md Typography Hierarchy: Subhead (15px) explicitly names dialog titles (Connect/Reconnect, Delete confirmation)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.1)",
+        "createdAt": "2026-09-03T16:43:51.980Z",
+        "reason": "DESIGN.md Elevation & Depth: Frosted Azure outline/list-divider treatment (The Outline Over Shadow Rule)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.06)",
+        "createdAt": "2026-09-03T16:43:52.132Z",
+        "reason": "DESIGN.md Components > Cards/Lists: translucent card fill and list-row hover brighten"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(255 255 255 / 0.2)",
+        "createdAt": "2026-09-03T16:43:52.288Z",
+        "reason": "DESIGN.md Elevation & Depth: Frosted Azure card/dialog border opacity"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "13px",
+        "createdAt": "2026-09-03T16:43:52.465Z",
+        "reason": "DESIGN.md Typography note: icon-adjacent glyphs (brand lettermark, platform-badge monogram) are sized to their container, exempt from the type ramp"
+      }
+    ]
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-04T12:50:54.397Z",
+  "title": "Design System: Ascentware Social Media Platform",
+  "extensions": {
+    "colorMeta": {
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#00161f",
+        "tonalRamp": [
+          "#001018",
+          "#00161f",
+          "#031e28",
+          "#08222d",
+          "#142d37",
+          "#1f3843",
+          "#243c47",
+          "#3e484e"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Primary Blue",
+        "canonical": "#6dd2ff",
+        "tonalRamp": [
+          "#001f2a",
+          "#003547",
+          "#004d65",
+          "#006686",
+          "#2bb3e4",
+          "#6dd2ff",
+          "#97ddff",
+          "#bfe8ff"
+        ]
+      },
+      "on-surface": {
+        "role": "neutral",
+        "displayName": "On Surface",
+        "canonical": "#cce6f4",
+        "tonalRamp": [
+          "#879299",
+          "#a6b3ba",
+          "#bdc8cf",
+          "#cce6f4",
+          "#d8edf8",
+          "#e4f2fa",
+          "#eef8fc",
+          "#f7fcfe"
+        ]
+      },
+      "error": {
+        "role": "neutral",
+        "displayName": "Error",
+        "canonical": "#ffb4ab",
+        "tonalRamp": [
+          "#690005",
+          "#93000a",
+          "#b3261e",
+          "#dc362e",
+          "#ff5449",
+          "#ffb4ab",
+          "#ffd9d5",
+          "#ffdad6"
+        ]
+      },
+      "status-success": {
+        "role": "neutral",
+        "displayName": "Status Success",
+        "canonical": "#7fe0a6",
+        "tonalRamp": [
+          "#0a2418",
+          "#123d2b",
+          "#1c5c40",
+          "#2c8557",
+          "#4bb87c",
+          "#7fe0a6",
+          "#a9ecc4",
+          "#d3f6e1"
+        ]
+      },
+      "status-pending-accent": {
+        "role": "neutral",
+        "displayName": "Status Pending",
+        "canonical": "#f2c078",
+        "tonalRamp": [
+          "#241a06",
+          "#3d2f10",
+          "#5c4718",
+          "#8a6b26",
+          "#c99a44",
+          "#f2c078",
+          "#f7d5a3",
+          "#fbe8cc"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline-md": {
+        "displayName": "Page Title",
+        "purpose": "The single page-level <h1> per surface (Organizations, Dashboard, Add Platform)."
+      },
+      "title": {
+        "displayName": "Panel Title",
+        "purpose": "Extension: 18px, weight raised to 600 for slide-over panel headings."
+      },
+      "subtitle": {
+        "displayName": "Dialog Title",
+        "purpose": "Extension: 16px, weight raised to 700 for compact centered-dialog headings."
+      },
+      "body-md": {
+        "displayName": "Page Subtitle",
+        "purpose": "The one-sentence description under a page's <h1>."
+      },
+      "label-md": {
+        "displayName": "Row / Control Text",
+        "purpose": "The workhorse size: button text, org/platform/account row titles, nav links."
+      },
+      "label-sm": {
+        "displayName": "Uppercase Label / Caption",
+        "purpose": "12px; tracked+uppercase for section labels, untracked for metadata prose (Caption)."
+      },
+      "micro": {
+        "displayName": "Chip Micro-Label",
+        "purpose": "Extension: 10px, below the source ramp's floor — the Current chip only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-lift",
+        "value": "-16px 0 40px -12px rgba(0,0,0,0.5)",
+        "purpose": "Right-edge slide-over panels (OrgDetailSheet, AccountPicker); mirrored for the left-edge mobile nav drawer."
+      }
+    ],
+    "motion": [
+      {
+        "name": "slide-in-right",
+        "value": "translateX(100%) -> translateX(0), 220ms cubic-bezier(0,0,0.2,1)",
+        "purpose": "Right-edge panel entrance (OrgDetailSheet, AccountPicker)."
+      },
+      {
+        "name": "slide-in-left",
+        "value": "translateX(-100%) -> translateX(0), 220ms cubic-bezier(0,0,0.2,1)",
+        "purpose": "Left-edge mobile nav drawer entrance."
+      },
+      {
+        "name": "fade-in",
+        "value": "opacity 0 -> 1, 220ms ease-out",
+        "purpose": "Scrim entrance behind any slide-over panel."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid white fill, bold blue text — the source spec's literal primary button.",
+      "html": "<button class=\"ds-btn-primary\">Create</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 4px; background: #ffffff; color: #004d65; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; border: none; transition: background 0.15s; } .ds-btn-primary:hover { background: rgba(255,255,255,0.9); } .ds-btn-primary:active { background: rgba(255,255,255,0.8); } .ds-btn-primary:focus-visible { outline: 2px solid #6dd2ff; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "White 40%-opacity ghost border, on-surface text — the default action button.",
+      "html": "<button class=\"ds-btn-secondary\">Connect</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 4px; background: transparent; color: #cce6f4; border: 1px solid rgba(255,255,255,0.4); font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; transition: background 0.15s; } .ds-btn-secondary:hover { background: rgba(255,255,255,0.1); } .ds-btn-secondary:active { background: rgba(255,255,255,0.15); } .ds-btn-secondary:focus-visible { outline: 2px solid #6dd2ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": null,
+      "description": "Error-toned outline, reserved for destructive confirmation (Delete organization).",
+      "html": "<button class=\"ds-btn-danger\">Delete organization</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 14px; border-radius: 4px; background: transparent; color: #ffb4ab; border: 1px solid rgba(255,180,171,0.5); font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 14px; transition: background 0.15s; } .ds-btn-danger:hover, .ds-btn-danger:active { background: rgba(147,0,10,0.4); } .ds-btn-danger:focus-visible { outline: 2px solid #6dd2ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Recessed surface-container-high background, outline-variant border, turns white on focus per the source spec.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Organization name\" />",
+      "css": ".ds-input { height: 36px; padding: 0 10px; border-radius: 4px; border: 1px solid #3e484e; background: #142d37; color: #cce6f4; font-family: 'Manrope', sans-serif; font-size: 14px; outline: none; } .ds-input::placeholder { color: rgba(189,200,207,0.7); } .ds-input:focus-visible { border-color: #ffffff; }"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Colored text on a matching low-opacity container tint, per connection state (success/pending/error/neutral).",
+      "html": "<span class=\"ds-status-pill\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M4.5 10.5l3.5 3.5 7.5-8\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Connected</span>",
+      "css": ".ds-status-pill { display: inline-flex; align-items: center; height: 24px; gap: 6px; padding: 0 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #7fe0a6; background: #123d2b; }"
+    },
+    {
+      "name": "Org Card",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The primary content row: a translucent-white card with a status dot, name/meta, and platform badges. Replaces the prior world's paper strip.",
+      "html": "<button class=\"ds-org-card\"><span class=\"ds-org-card-dot\"></span><span class=\"ds-org-card-main\"><span class=\"ds-org-card-name\">Northlight Coffee Co.</span><span class=\"ds-org-card-meta\">Added 3 Sept 2026 · 0 of 3 platforms connected</span></span></button>",
+      "css": ".ds-org-card { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); padding: 14px 16px; transition: background-color 0.15s; } .ds-org-card:hover { background: rgba(255,255,255,0.08); } .ds-org-card-dot { width: 10px; height: 10px; border-radius: 9999px; background: #7fe0a6; flex-shrink: 0; } .ds-org-card-name { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 600; color: #cce6f4; } .ds-org-card-meta { display: block; font-family: 'Manrope', sans-serif; font-size: 12px; color: #bdc8cf; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Sidebar",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "224px fixed column (sm and up), icon + label links, active link on a primary/15 tint with primary text/icon.",
+      "html": "<aside class=\"ds-sidebar\"><nav class=\"ds-sidebar-links\"><a class=\"ds-sidebar-link\" href=\"/dashboard\">Dashboard</a><a class=\"ds-sidebar-link ds-sidebar-link-active\" href=\"/organizations\">Organizations</a><a class=\"ds-sidebar-link\" href=\"/add-platform\">Add Platform</a></nav></aside>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; width: 224px; padding-top: 20px; background: #001018; border-right: 1px solid #3e484e; height: 100%; } .ds-sidebar-links { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; } .ds-sidebar-link { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 4px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 500; color: #bdc8cf; text-decoration: none; transition: color 0.15s, background-color 0.15s; } .ds-sidebar-link:hover { color: #cce6f4; background: rgba(255,255,255,0.06); } .ds-sidebar-link-active { background: rgba(109,210,255,0.15); color: #6dd2ff; }"
+    },
+    {
+      "name": "Top Header",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "56px bar paired with the sidebar. Left: mobile hamburger + brand lockup. Right: settings icon and account avatar — intentional placeholders, no destination yet.",
+      "html": "<header class=\"ds-topheader\"><a class=\"ds-topheader-brand\" href=\"/organizations\"><span class=\"ds-brandmark\">A</span>Ascentware</a><div class=\"ds-topheader-actions\"><button class=\"ds-topheader-icon\" aria-label=\"Settings\">⚙</button><button class=\"ds-topheader-avatar\" aria-label=\"Account\">A</button></div></header>",
+      "css": ".ds-topheader { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 24px; background: #001018; border-bottom: 1px solid #3e484e; } .ds-topheader-brand { display: flex; align-items: center; gap: 8px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: #cce6f4; text-decoration: none; } .ds-brandmark { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #6dd2ff; color: #003547; font-weight: 800; font-size: 13px; } .ds-topheader-actions { display: flex; align-items: center; gap: 4px; } .ds-topheader-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 4px; background: transparent; color: #bdc8cf; border: none; } .ds-topheader-avatar { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9999px; background: #1f3843; color: #bdc8cf; border: none; }"
+    },
+    {
+      "name": "Slide-Over Panel",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Right-edge panel (org detail, account picker) that slides over the page, surface-container-high with an outline border and shadow.",
+      "html": "<div class=\"ds-panel\"><div class=\"ds-panel-header\">Amberwell Clinic</div></div>",
+      "css": ".ds-panel { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 32rem; background: #142d37; border-left: 1px solid rgba(255,255,255,0.15); box-shadow: -16px 0 40px -12px rgba(0,0,0,0.5); transform: translateX(0); transition: transform 0.2s; } .ds-panel-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 600; color: #cce6f4; }"
+    },
+    {
+      "name": "Catalog Table",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Shared table pattern for admin-catalog lists (OrganizationsTable, PlatformsTable): rounded-lg outline container, uppercase Label-SM header row, hairline row separators, brighten-on-hover, EmptyState row when empty.",
+      "html": "<div class=\"ds-table-wrap\"><table class=\"ds-table\"><thead><tr><th>Platform</th><th>Summary</th><th>Accounts called</th><th class=\"ds-table-actions-head\">Actions</th></tr></thead><tbody><tr><td><span class=\"ds-table-name\">TikTok</span></td><td class=\"ds-table-muted\">Short-form video</td><td class=\"ds-table-muted\">Account / Accounts</td><td class=\"ds-table-actions\">Edit</td></tr></tbody></table></div>",
+      "css": ".ds-table-wrap { overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); } .ds-table { width: 100%; border-collapse: collapse; text-align: left; font-family: 'Manrope', sans-serif; } .ds-table thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.1); } .ds-table th { padding: 10px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #bdc8cf; } .ds-table-actions-head { text-align: right; } .ds-table td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; color: #cce6f4; } .ds-table tbody tr:last-child td { border-bottom: none; } .ds-table tbody tr:hover { background: rgba(255,255,255,0.04); } .ds-table-muted { color: #bdc8cf; font-size: 12px; } .ds-table-actions { text-align: right; }"
+    },
+    {
+      "name": "Credential Field Row",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Nested card row for an admin-defined, arbitrary-length list of key/value pairs (Add Platform credential builder): Field Name input, Value input (password when secret), Secret checkbox, Remove icon-button.",
+      "html": "<div class=\"ds-field-row\"><div class=\"ds-field-row-input\"><label>Field name</label><input type=\"text\" placeholder=\"e.g. Client ID\" /></div><div class=\"ds-field-row-input\"><label>Value</label><input type=\"password\" /></div><label class=\"ds-field-row-secret\"><input type=\"checkbox\" />Secret</label><button class=\"ds-field-row-remove\" aria-label=\"Remove field\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 20 20\" fill=\"none\"><path d=\"M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></div>",
+      "css": ".ds-field-row { display: flex; align-items: flex-end; gap: 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); padding: 10px; font-family: 'Manrope', sans-serif; } .ds-field-row-input { flex: 1; min-width: 0; } .ds-field-row-input label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500; color: #bdc8cf; } .ds-field-row-input input { width: 100%; height: 36px; padding: 0 10px; border-radius: 4px; border: 1px solid #3e484e; background: #142d37; color: #cce6f4; font-size: 14px; } .ds-field-row-input input:focus-visible { border-color: #ffffff; outline: 2px solid #6dd2ff; outline-offset: 2px; } .ds-field-row-secret { display: flex; align-items: center; gap: 6px; padding-bottom: 8px; font-size: 12px; color: #bdc8cf; white-space: nowrap; } .ds-field-row-remove { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; background: transparent; border: none; color: #bdc8cf; margin-bottom: 2px; } .ds-field-row-remove:hover { background: rgba(255,255,255,0.08); color: #cce6f4; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Luminous Dark",
+    "overview": "A high-contrast dark mode anchored on a vibrant, architectural blue. The brand personality is precise, technical, and high-energy — built for professionals who need a focused environment that feels both cutting-edge and structurally sound. The aesthetic blends minimalism with a technological glow: a near-black navy base (#00161f) holds the interface, and a saturated cyan-blue (primary #6dd2ff, primary-container #2bb3e4) carries every point of emphasis — CTAs, active states, focus rings, the current selection. The emotional register is clarity and digital sophistication: intense saturation used sparingly to mark what matters, extreme legibility everywhere else.\n\nThis system resolves one tension in the source brief: its prose describes primary blue as the foundational background, while its own token export defines background/surface as near-black and reserves primary as an accent role (the standard Material-3 pattern this token set is built on). The token export is treated as normative here — dark navy is the base, vibrant blue is the accent — since an all-blue background would fight the same brief's own legibility goal and isn't how its component specs (white-on-navy buttons, navy recessed inputs, frosted-white cards) actually read.\n\nThis is a full replacement of a prior kraft-paper/graphite/grease-pencil world, not an extension of it — cards and list rows replace that world's paper strips outright.",
+    "keyCharacteristics": [
+      "Near-black navy base with a saturated cyan-blue accent — dark mode, not an inverted light theme",
+      "Manrope throughout, weights pushed toward semi-bold/bold for headings against dark surfaces",
+      "\"Frosted Azure\" elevation: translucent white fills and 1px white-opacity outlines stand in for shadows",
+      "Cards and list rows — a full replacement of the prior strip-based world",
+      "One persistent app shell (sidebar + header) carries navigation"
+    ],
+    "rules": [
+      {
+        "name": "The Accent, Not Ambient, Rule",
+        "body": "Primary blue marks emphasis — buttons, focus, the current selection — never a full-page or full-panel background. Large surfaces stay on the neutral surface ladder; saturation is spent where it means something.",
+        "section": "colors"
+      },
+      {
+        "name": "The Outline Over Shadow Rule",
+        "body": "Depth comes from translucent white fills and 1px white-opacity borders (\"Frosted Azure\"), not colored drop shadows. Reserve the one shadow token for slide-over panels only.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Weight-Over-Size Rule",
+        "body": "Where a heading needs to sit at a size the ramp already uses for body copy (Title at 18px, Subtitle at 16px), raise the weight instead of inventing a new size.",
+        "section": "typography"
+      },
+      {
+        "name": "The Field-Not-List Rule",
+        "body": "When a form needs an admin-defined, open-ended set of values (Add Platform's credential fields) rather than a fixed schema, build it as appendable Credential Field Rows on the existing Input/Checkbox/IconButton vocabulary — never pre-populate from a hardcoded list.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do use Manrope at the documented weight for every size step; don't introduce a second face.",
+      "Do spend primary blue on emphasis only — buttons, focus, the current-item state — never as a passive background fill.",
+      "Do use outlines and tonal surface steps for depth; reserve the one shadow token for slide-over panels only.",
+      "Do raise weight rather than size when a heading needs to share a body size step.",
+      "Do keep numeric list data in .tabular."
+    ],
+    "donts": [
+      "Don't fill a large surface with saturated primary blue — accent, don't flood.",
+      "Don't add a colored or soft drop shadow to a card, row, or badge.",
+      "Don't revive the prior kraft-paper/graphite/grease-pencil world's motifs (die-cut clips, hand-inked wobble) — this is a full replacement.",
+      "Don't add a footer, a second sidebar, or per-surface navigation. AppShell is the one persistent chrome.",
+      "Don't introduce a fifth status color; reuse success/pending/error/neutral-surface."
+    ]
+  }
+}
