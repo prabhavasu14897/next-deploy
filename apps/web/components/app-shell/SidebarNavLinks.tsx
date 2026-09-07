@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DashboardIcon, OrganizationsIcon, PlugIcon } from "@/components/ui/icons";
+import { DashboardIcon, OrganizationsIcon, PlugIcon, SparklesIcon } from "@/components/ui/icons";
 
 const LINKS = [
   { href: "/dashboard", label: "Dashboard", Icon: DashboardIcon },
   { href: "/organizations", label: "Organizations", Icon: OrganizationsIcon },
+  { href: "/post", label: "Post", Icon: SparklesIcon },
   { href: "/add-platform", label: "Add Platform", Icon: PlugIcon },
 ];
 

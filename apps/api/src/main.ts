@@ -20,6 +20,8 @@ import { AppModule } from './app.module.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // The Next.js dev server runs on a different port — allow it to call this API.
+  app.enableCors({ origin: true });
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 4000);

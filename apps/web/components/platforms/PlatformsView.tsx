@@ -85,6 +85,7 @@ export function PlatformsView() {
         }
         confirmLabel={deleteBlocked ? "Understood" : "Delete platform"}
         danger={!deleteBlocked}
+        confirmationText={deleteBlocked ? undefined : deleteTarget?.name}
         onConfirm={() => {
           if (!deleteTarget || deleteBlocked) return;
           deletePlatform(deleteTarget.id);

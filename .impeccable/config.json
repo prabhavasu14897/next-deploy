@@ -50,6 +50,33 @@
         "value": "13px",
         "createdAt": "2026-09-03T16:43:52.465Z",
         "reason": "DESIGN.md Typography note: icon-adjacent glyphs (brand lettermark, platform-badge monogram) are sized to their container, exempt from the type ramp"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "20px",
+        "files": [
+          "apps/web/components/posts/OptimizationScoreGauge.tsx"
+        ],
+        "createdAt": "2026-09-06T14:14:46.873Z",
+        "reason": "Claude: gauge's central digit is sized to its SVG container (matches a size prop, 56-110px range across call sites), same category as DESIGN.md's own documented exception for icon-adjacent glyphs (platform-badge monogram, brand lettermark) being sized to container rather than bound to the type ramp"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "11px",
+        "files": [
+          "apps/web/components/posts/platform-previews/FacebookPreview.tsx"
+        ],
+        "createdAt": "2026-09-06T14:15:22.634Z",
+        "reason": "Claude: this component intentionally renders Facebook's own real light-chrome UI for preview accuracy, not the app's dark design system — DESIGN.md's ramp governs the app's own UI, not a simulated external network surface"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "11px",
+        "files": [
+          "apps/web/components/posts/platform-previews/LinkedInPreview.tsx"
+        ],
+        "createdAt": "2026-09-06T14:15:22.787Z",
+        "reason": "Claude: this component intentionally renders LinkedIn's own real light-chrome UI for preview accuracy, not the app's dark design system — DESIGN.md's ramp governs the app's own UI, not a simulated external network surface"
       }
     ]
   }

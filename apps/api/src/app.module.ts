@@ -29,12 +29,16 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { AiModule } from './ai/ai.module.js';
+import { PublishModule } from './publish/publish.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    AiModule,
+    PublishModule,
   ],
   controllers: [AppController],
   providers: [AppService],
