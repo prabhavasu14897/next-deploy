@@ -2,7 +2,12 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  '@prisma/engines': true
+  esbuild: true
+  msgpackr-extract: false
+  prisma: true
   unrs-resolver: true
+  workerd: false
 minimumReleaseAgeExclude:
   - '@rolldown/binding-darwin-arm64@1.2.7'
   - '@rolldown/binding-linux-ppc64-gnu@1.2.7'

@@ -39,20 +39,26 @@ export function ConnectPlatformDialog({
 
       <div className="mt-4 rounded border border-white/10 bg-surface-container-highest p-3">
         <p className="text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">
-          This will allow access to
+          Uses these credentials
         </p>
         <ul className="mt-1.5 space-y-1">
-          {integration.scopes.map((scope) => (
-            <li key={scope} className="text-[12px] text-on-surface tabular">
-              {scope}
+          {integration.credentialFields.length === 0 ? (
+            <li className="text-[12px] text-on-surface-variant">
+              No credential fields defined for this platform yet.
             </li>
-          ))}
+          ) : (
+            integration.credentialFields.map((field) => (
+              <li key={field.key} className="text-[12px] text-on-surface">
+                {field.label}
+              </li>
+            ))
+          )}
         </ul>
       </div>
 
       <p className="mt-3 text-[12px] leading-snug text-status-pending-accent">
-        Simulated connection — no real {platform.name} account will be contacted.
-        Platform integrations are not yet live.
+        This makes a real request to {platform.name} using the credentials configured in Add Platform — it will fail
+        with a clear error if they aren&apos;t filled in yet.
       </p>
 
       <DialogActions>

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { Post, TabStatus } from "@/lib/posts/types";
 import { usePosts } from "@/lib/posts/store";
 import { usePlatforms } from "@/lib/platforms/store";
-import { contentTypeById } from "@/lib/posts/content-templates";
+import { useTemplates } from "@/lib/templates/store";
 import { formatDate } from "@/lib/organizations/derive";
 import { Badge } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/Button";
@@ -56,6 +56,7 @@ function postMatchesStatusFilter(post: Post, filter: string): boolean {
 export function PostHistoryTable({ posts }: { posts: Post[] }) {
   const { platformById, state: platformsState } = usePlatforms();
   const { deletePost } = usePosts();
+  const { templateById } = useTemplates();
   const [deleteTarget, setDeleteTarget] = useState<Post | null>(null);
   const [query, setQuery] = useState("");
   const [platformFilter, setPlatformFilter] = useState("all");
@@ -65,7 +66,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return posts.filter((post) => {
-      const type = contentTypeById(post.contentType);
+      const type = templateById(post.contentType);
       if (q) {
         const haystack = `${type?.label ?? post.contentType} ${post.prompt} ${post.drafts.map((d) => d.caption).join(" ")}`.toLowerCase();
         if (!haystack.includes(q)) return false;
@@ -74,7 +75,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
       if (!postMatchesStatusFilter(post, statusFilter)) return false;
       return true;
     });
-  }, [posts, query, platformFilter, statusFilter]);
+  }, [posts, query, platformFilter, statusFilter, templateById]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
@@ -161,7 +162,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                 </tr>
               ) : (
                 pageItems.map((post) => {
-                  const type = contentTypeById(post.contentType);
+                  const type = templateById(post.contentType);
                   return (
                     <tr key={post.id} className="border-b border-white/[0.06] transition-colors last:border-b-0 hover:bg-white/[0.04]">
                       <td className="px-4 py-3">

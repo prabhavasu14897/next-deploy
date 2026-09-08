@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePlatforms } from "@/lib/platforms/store";
 import { usePosts } from "@/lib/posts/store";
+import { useTemplates } from "@/lib/templates/store";
 import { scorePost } from "@/lib/posts/optimization";
 import type { Post } from "@/lib/posts/types";
 import { OptimizationScoreGauge } from "@/components/posts/OptimizationScoreGauge";
@@ -22,6 +23,7 @@ function defaultScheduleValue(): string {
 export function StepPublish({ post }: { post: Post }) {
   const { platformById } = usePlatforms();
   const { applyAllSuggestions, saveAsDraft, scheduleDraft, submitPost } = usePosts();
+  const { templateById } = useTemplates();
   const [modes, setModes] = useState<Record<string, PublishMode>>({});
   const [scheduleTimes, setScheduleTimes] = useState<Record<string, string>>({});
   const [applyingFor, setApplyingFor] = useState<string | null>(null);
@@ -63,7 +65,8 @@ export function StepPublish({ post }: { post: Post }) {
               onClick={async () => {
                 setApplyingFor(primaryDraft.platformId);
                 try {
-                  await applyAllSuggestions(post.id, primaryDraft.platformId);
+                  const defaultCta = templateById(post.contentType)?.defaultCta ?? "Learn more today!";
+                  await applyAllSuggestions(post.id, primaryDraft.platformId, defaultCta);
                 } finally {
                   setApplyingFor(null);
                 }

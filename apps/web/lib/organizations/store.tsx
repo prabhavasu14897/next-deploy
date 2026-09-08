@@ -7,7 +7,6 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef,
 } from "react";
 import type {
   DraftPage,
@@ -16,9 +15,11 @@ import type {
   OrganizationDraft,
   OrganizationPlatformConnection,
 } from "./types";
-import { generateMockAccounts, toHandle } from "./mock-accounts";
+import { toHandle } from "./mock-accounts";
 import { makeId } from "./id";
 import { usePlatforms } from "../platforms/store";
+import * as platformsApi from "../platforms/api-client";
+import type { ApiError } from "../platforms/api-client";
 
 const STORAGE_KEY = "ascentware.smp.organizations.v1";
 
@@ -172,9 +173,8 @@ export function OrganizationsProvider({
   children: React.ReactNode;
 }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const {
-    state: { platforms, integrations },
+    state: { platforms },
   } = usePlatforms();
 
   useEffect(() => {
@@ -184,10 +184,6 @@ export function OrganizationsProvider({
     } catch {
       dispatch({ type: "hydrate", state: null });
     }
-    const pending = timers.current;
-    return () => {
-      pending.forEach(clearTimeout);
-    };
   }, []);
 
   useEffect(() => {
@@ -252,11 +248,14 @@ export function OrganizationsProvider({
     [state.accounts]
   );
 
+  // Real connection — calls the Platforms API, which resolves the DB-stored,
+  // decrypted credentials and makes an actual authenticated call to the
+  // platform (a bespoke integration for LinkedIn/Facebook, a generic
+  // credential-check for anything else). No more simulated latency/failure.
   const connectPlatform = useCallback(
     (organizationId: string, platformId: string) => {
-      const integration = integrations[platformId];
       const platform = platforms.find((p) => p.id === platformId);
-      if (!integration || !platform) return;
+      if (!platform) return;
 
       const existing = state.connections.find(
         (c) => c.organizationId === organizationId && c.platformId === platformId
@@ -273,59 +272,28 @@ export function OrganizationsProvider({
           connectedAt: null,
           lastError: null,
           accountsDiscovered: existing?.accountsDiscovered ?? false,
-          discoveringAccounts: false,
+          discoveringAccounts: true,
         },
       });
 
-      const [minLatency, maxLatency] = integration.simulatedLatencyMsRange;
-      const latency = minLatency + Math.random() * (maxLatency - minLatency);
-
-      const authTimer = setTimeout(() => {
-        const failed = Math.random() < integration.simulatedFailureRate;
-
-        if (failed) {
-          dispatch({
-            type: "connection_upsert",
-            connection: {
-              id: connectionId,
+      platformsApi
+        .connectPlatform(platformId)
+        .then((result) => {
+          if (result.accounts.length > 0) {
+            const accounts: ManagedAccount[] = result.accounts.map((a) => ({
+              id: makeId("acct"),
+              connectionId,
               organizationId,
               platformId,
-              status: "error",
-              connectedAt: null,
-              lastError: `${platform.name} declined the authorization request. This is a simulated failure — no real ${platform.name} account was contacted.`,
-              accountsDiscovered: existing?.accountsDiscovered ?? false,
-              discoveringAccounts: false,
-            },
-          });
-          return;
-        }
-
-        dispatch({
-          type: "connection_upsert",
-          connection: {
-            id: connectionId,
-            organizationId,
-            platformId,
-            status: "connected",
-            connectedAt: new Date().toISOString(),
-            lastError: null,
-            accountsDiscovered: existing?.accountsDiscovered ?? false,
-            discoveringAccounts: true,
-          },
-        });
-
-        const discoveryTimer = setTimeout(() => {
-          const [minCount, maxCount] = integration.accountCountRange;
-          const count = Math.round(
-            minCount + Math.random() * (maxCount - minCount)
-          );
-          const accounts = generateMockAccounts({
-            connectionId,
-            organizationId,
-            platform,
-            count,
-          });
-          dispatch({ type: "set_accounts", connectionId, accounts });
+              externalId: a.externalId,
+              name: a.name,
+              handle: a.handle,
+              type: a.type,
+              followers: a.followers,
+              selected: false,
+            }));
+            dispatch({ type: "set_accounts", connectionId, accounts });
+          }
           dispatch({
             type: "connection_upsert",
             connection: {
@@ -339,12 +307,24 @@ export function OrganizationsProvider({
               discoveringAccounts: false,
             },
           });
-        }, 700 + Math.random() * 500);
-        timers.current.push(discoveryTimer);
-      }, latency);
-      timers.current.push(authTimer);
+        })
+        .catch((err) => {
+          dispatch({
+            type: "connection_upsert",
+            connection: {
+              id: connectionId,
+              organizationId,
+              platformId,
+              status: "error",
+              connectedAt: null,
+              lastError: (err as ApiError)?.message ?? `Couldn't connect to ${platform.name}.`,
+              accountsDiscovered: existing?.accountsDiscovered ?? false,
+              discoveringAccounts: false,
+            },
+          });
+        });
     },
-    [state.connections, platforms, integrations]
+    [state.connections, platforms]
   );
 
   const toggleAccountSelected = useCallback((accountId: string) => {

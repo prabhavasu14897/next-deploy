@@ -1,6 +1,10 @@
 export interface PublishInput {
   imageBase64: string;
   caption: string;
+  /** The platform's Add Platform credential fields, decrypted, keyed by
+   *  slugified field label — resolved server-side by PublishService from
+   *  the Platforms database, never sent by the client. */
+  credentials: Record<string, string>;
 }
 
 export interface PublishResult {

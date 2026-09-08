@@ -3,8 +3,7 @@
 import { useState } from "react";
 import type { Organization } from "@/lib/organizations/types";
 import { usePosts } from "@/lib/posts/store";
-import { contentTypeById } from "@/lib/posts/content-templates";
-import type { ContentTypeId } from "@/lib/posts/types";
+import { useTemplates } from "@/lib/templates/store";
 import { StepTypeAndPlatform, type PlatformTarget } from "./steps/StepTypeAndPlatform";
 import { StepPrompt } from "./steps/StepPrompt";
 import { StepEditor } from "./steps/StepEditor";
@@ -34,8 +33,9 @@ export function PostWizard({
   onOrganizationChange: (id: string) => void;
 }) {
   const { state, createDraft } = usePosts();
+  const { templateById } = useTemplates();
   const [step, setStep] = useState<StepId>("type");
-  const [contentType, setContentType] = useState<ContentTypeId | null>(null);
+  const [contentType, setContentType] = useState<string | null>(null);
   const [targets, setTargets] = useState<PlatformTarget[]>([]);
   const [prompt, setPrompt] = useState("");
   const [imageStyles, setImageStyles] = useState<string[]>([]);
@@ -57,9 +57,9 @@ export function PostWizard({
     setActivePlatformId(null);
   }
 
-  function handleContentTypeChange(id: ContentTypeId) {
+  function handleContentTypeChange(id: string) {
     setContentType(id);
-    setPrompt(contentTypeById(id)?.defaultPrompt(organizationName) ?? "");
+    setPrompt(templateById(id)?.promptTemplate.replaceAll("{orgName}", organizationName) ?? "");
   }
 
   function handleGenerate() {

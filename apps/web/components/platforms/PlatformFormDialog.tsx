@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Platform, PlatformDraft, PlatformIntegrationConfig } from "@/lib/organizations/types";
 import { makeId } from "@/lib/organizations/id";
 import { Dialog } from "@/components/ui/Dialog";
@@ -16,9 +16,13 @@ interface FieldRow {
   label: string;
   secret: boolean;
   value: string;
+  /** True when a secret field already has a value stored server-side —
+   *  drives the "leave blank to keep it" placeholder, since the API never
+   *  sends a decrypted secret back to pre-fill. */
+  hasExistingValue: boolean;
 }
 
-const EMPTY_CATALOG = { name: "", summary: "", accountNoun: "", accountNounPlural: "" };
+const EMPTY_CATALOG = { name: "", summary: "", accountNoun: "", accountNounPlural: "", apiBaseUrl: "" };
 
 function slugify(label: string): string {
   const slug = label
@@ -47,36 +51,47 @@ export function PlatformFormDialog({
 }) {
   const [catalog, setCatalog] = useState(EMPTY_CATALOG);
   const [fields, setFields] = useState<FieldRow[]>([]);
-
-  useEffect(() => {
-    if (!open) return;
-    if (editing) {
+  // Reset the form whenever the dialog transitions to open (fresh create,
+  // or editing a possibly-different target) — adjusted during render off a
+  // remembered previous `open` value rather than in an effect, so it takes
+  // effect the same render instead of one render late.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open && editing) {
       setCatalog({
         name: editing.platform.name,
         summary: editing.platform.summary,
         accountNoun: editing.platform.accountNoun,
         accountNounPlural: editing.platform.accountNounPlural,
+        apiBaseUrl: editing.platform.apiBaseUrl,
       });
       setFields(
-        editing.integration.credentialFields.map((f) => ({
-          id: makeId("field"),
-          label: f.label,
-          secret: f.secret,
-          value: editing.integration.credentials[f.key] ?? "",
-        }))
+        editing.integration.credentialFields.map((f) => {
+          const stored = editing.integration.credentials[f.key];
+          return {
+            id: makeId("field"),
+            label: f.label,
+            secret: f.secret,
+            // Secret values never round-trip from the API — start blank
+            // rather than showing a fake pre-fill.
+            value: f.secret ? "" : stored ?? "",
+            hasExistingValue: f.secret && !!stored,
+          };
+        })
       );
-    } else {
+    } else if (open) {
       setCatalog(EMPTY_CATALOG);
       setFields([]);
     }
-  }, [open, editing]);
+  }
 
   function updateCatalog<K extends keyof typeof EMPTY_CATALOG>(key: K, value: string) {
     setCatalog((c) => ({ ...c, [key]: value }));
   }
 
   function addField() {
-    setFields((f) => [...f, { id: makeId("field"), label: "", secret: false, value: "" }]);
+    setFields((f) => [...f, { id: makeId("field"), label: "", secret: false, value: "", hasExistingValue: false }]);
   }
 
   function updateField(id: string, updates: Partial<FieldRow>) {
@@ -108,6 +123,7 @@ export function PlatformFormDialog({
       summary: catalog.summary.trim(),
       accountNoun: catalog.accountNoun.trim(),
       accountNounPlural: catalog.accountNounPlural.trim(),
+      apiBaseUrl: catalog.apiBaseUrl.trim(),
       credentialFields,
       credentials,
     });
@@ -155,6 +171,15 @@ export function PlatformFormDialog({
               onChange={(e) => updateCatalog("accountNounPlural", e.target.value)}
               placeholder="e.g. Pages"
             />
+            <TextField
+              label="API base URL"
+              id="platform-api-base-url"
+              containerClassName="col-span-2"
+              value={catalog.apiBaseUrl}
+              onChange={(e) => updateCatalog("apiBaseUrl", e.target.value)}
+              placeholder="https://api.example.com/v1/me"
+              hint="Where Connect calls to validate credentials for this platform, when no bespoke integration exists for it."
+            />
           </div>
 
           <div className="border-t border-white/10 pt-4">
@@ -196,6 +221,7 @@ export function PlatformFormDialog({
                       type={field.secret ? "password" : "text"}
                       value={field.value}
                       onChange={(e) => updateField(field.id, { value: e.target.value })}
+                      placeholder={field.hasExistingValue ? "Leave blank to keep the existing value" : undefined}
                       className="w-full"
                     />
                   </div>
@@ -226,7 +252,8 @@ export function PlatformFormDialog({
             </div>
 
             <p className="mt-2.5 text-[12px] text-status-pending-accent">
-              Stored locally in your browser for this demo — not production secret storage.
+              Secret values are encrypted at rest — this demo&apos;s encryption key still lives in a local .env file,
+              not a production-grade secret manager.
             </p>
           </div>
         </div>

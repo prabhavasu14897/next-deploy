@@ -1,6 +1,7 @@
 export interface PublishInput {
     imageBase64: string;
     caption: string;
+    credentials: Record<string, string>;
 }
 export interface PublishResult {
     externalPostId: string;

@@ -3,9 +3,9 @@
 import type { Organization } from "@/lib/organizations/types";
 import { useOrganizations } from "@/lib/organizations/store";
 import { usePlatforms } from "@/lib/platforms/store";
-import { CONTENT_TYPES } from "@/lib/posts/content-templates";
+import { useTemplates } from "@/lib/templates/store";
+import { iconFor } from "@/lib/templates/icon-registry";
 import { isPublishSupported } from "@/lib/posts/publish-support";
-import type { ContentTypeId } from "@/lib/posts/types";
 import { SelectField } from "@/components/ui/SelectField";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { PlatformBadge } from "@/components/organizations/PlatformBadge";
@@ -27,13 +27,14 @@ export function StepTypeAndPlatform({
   organizations: Organization[];
   organizationId: string;
   onOrganizationChange: (id: string) => void;
-  contentType: ContentTypeId | null;
-  onContentTypeChange: (id: ContentTypeId) => void;
+  contentType: string | null;
+  onContentTypeChange: (id: string) => void;
   targets: PlatformTarget[];
   onTargetsChange: (targets: PlatformTarget[]) => void;
 }) {
   const { state: platformsState } = usePlatforms();
   const { connectionFor, accountsFor } = useOrganizations();
+  const { state: templatesState } = useTemplates();
 
   function togglePlatform(platformId: string) {
     const exists = targets.some((t) => t.platformId === platformId);
@@ -64,8 +65,9 @@ export function StepTypeAndPlatform({
       <div className="space-y-3">
         <h2 className="text-[18px] font-semibold text-on-surface">Select post type</h2>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {CONTENT_TYPES.map((type) => {
+          {templatesState.templates.map((type) => {
             const active = contentType === type.id;
+            const Icon = iconFor(type.iconKey);
             return (
               <button
                 key={type.id}
@@ -75,7 +77,7 @@ export function StepTypeAndPlatform({
                   active ? "border-primary bg-primary/10" : "border-white/15 bg-white/[0.02] hover:bg-white/[0.06]"
                 }`}
               >
-                <type.Icon className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-on-surface-variant"}`} />
+                <Icon className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-on-surface-variant"}`} />
                 <div>
                   <p className={`text-[14px] font-semibold ${active ? "text-primary" : "text-on-surface"}`}>
                     {type.label}

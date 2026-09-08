@@ -4,8 +4,10 @@ import { PublishService } from './publish.service.js';
 import { PUBLISH_PROVIDERS } from './publish-provider.interface.js';
 import { LinkedInProvider } from './providers/linkedin.provider.js';
 import { FacebookProvider } from './providers/facebook.provider.js';
+import { PlatformsModule } from '../platforms/platforms.module.js';
 
 @Module({
+  imports: [PlatformsModule],
   controllers: [PublishController],
   providers: [
     LinkedInProvider,

@@ -11,6 +11,9 @@ export interface Platform {
   /** what a discovered connection surfaces, e.g. "Page", "Business account" */
   accountNoun: string;
   accountNounPlural: string;
+  /** Where Connect calls to validate credentials when no bespoke backend
+   *  integration exists for this platform (see the generic connector). */
+  apiBaseUrl: string;
 }
 
 /** One credential field a platform needs to connect — defined by the admin
@@ -18,9 +21,10 @@ export interface Platform {
 export interface CredentialField {
   key: string;
   label: string;
-  /** Masked input (type="password") — a UI convenience, not real security:
-   *  this mock app has no backend, so values are stored the same place as
-   *  everything else (localStorage). */
+  /** Masked input (type="password"); a true value is also encrypted at
+   *  rest server-side and never returned to the client once saved (see
+   *  the Platforms API — the frontend only ever sees `credentials[key]`
+   *  as an empty string or a masked placeholder, never the real secret). */
   secret: boolean;
 }
 

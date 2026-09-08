@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell/AppShell";
 import { PlatformsProvider } from "@/lib/platforms/store";
 import { OrganizationsProvider } from "@/lib/organizations/store";
 import { PostsProvider } from "@/lib/posts/store";
+import { TemplatesProvider } from "@/lib/templates/store";
 import "./globals.css";
 
 // Self-hosted (next/font downloads and serves the files at build time, no
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <AppShell>
           <PlatformsProvider>
             <OrganizationsProvider>
-              <PostsProvider>{children}</PostsProvider>
+              <TemplatesProvider>
+                <PostsProvider>{children}</PostsProvider>
+              </TemplatesProvider>
             </OrganizationsProvider>
           </PlatformsProvider>
         </AppShell>

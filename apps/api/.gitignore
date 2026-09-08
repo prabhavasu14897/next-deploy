@@ -34,6 +34,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# prisma — generated client is a build artifact, dev.db is local data
+/src/generated
+prisma/dev.db
+prisma/dev.db-journal
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

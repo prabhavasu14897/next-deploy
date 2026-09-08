@@ -1,15 +1,3 @@
-import type { SVGProps } from "react";
-
-export type ContentTypeId = "jd" | "birthday" | "workAnniversary" | "achievement" | "event" | "generalPost";
-
-export interface ContentType {
-  id: ContentTypeId;
-  label: string;
-  description: string;
-  Icon: (props: SVGProps<SVGSVGElement>) => React.ReactElement;
-  defaultPrompt: (orgName: string) => string;
-}
-
 export type RewriteAction = "improve" | "shorten" | "grammar";
 export type ContentTone = "professional" | "casual" | "enthusiastic" | "formal";
 
@@ -38,7 +26,9 @@ export interface PlatformDraft {
 export interface Post {
   id: string;
   organizationId: string;
-  contentType: ContentTypeId;
+  /** References a ContentTemplate.id from lib/templates/store.tsx — an
+   *  admin-editable catalog, not a fixed union. */
+  contentType: string;
   prompt: string;
   drafts: PlatformDraft[];
   createdAt: string;

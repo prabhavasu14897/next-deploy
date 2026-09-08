@@ -50,7 +50,8 @@ export function rewrite(
 
 /** One generic publish call for any platform key — not a hardcoded
  *  per-platform function. `platformKey` matches a backend PublishProvider's
- *  `key` (see lib/posts/publish-support.ts). */
+ *  `key` (see lib/posts/publish-support.ts). Credentials are resolved
+ *  server-side from the Platforms database — never sent from here. */
 export function publish(
   platformKey: string,
   input: { imageBase64: string; caption: string }

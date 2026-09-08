@@ -10,6 +10,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AiModule } from './ai/ai.module.js';
 import { PublishModule } from './publish/publish.module.js';
+import { PlatformsModule } from './platforms/platforms.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -19,6 +20,7 @@ AppModule = __decorate([
                 isGlobal: true,
             }),
             AiModule,
+            PlatformsModule,
             PublishModule,
         ],
         controllers: [AppController],

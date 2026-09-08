@@ -1,10 +1,10 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
-import type { ContentTone, ContentTypeId, PlatformDraft, Post, RewriteAction, TabStatus } from "./types";
+import type { ContentTone, PlatformDraft, Post, RewriteAction, TabStatus } from "./types";
 import * as api from "./api-client";
 import type { ApiError } from "./api-client";
-import { breakLongFirstParagraph, defaultBenefitSentence, defaultCtaFor, scorePost } from "./optimization";
+import { breakLongFirstParagraph, defaultBenefitSentence, scorePost } from "./optimization";
 import { makeId } from "../organizations/id";
 import { usePlatforms } from "../platforms/store";
 
@@ -80,7 +80,7 @@ interface PostsContextValue {
   state: State;
   createDraft: (
     organizationId: string,
-    contentType: ContentTypeId,
+    contentType: string,
     prompt: string,
     imageStyles: string[],
     targets: { platformId: string; accountId: string | null }[],
@@ -89,7 +89,7 @@ interface PostsContextValue {
   regenerateImage: (postId: string, platformId: string, correction?: string) => void;
   generateHashtagsFor: (postId: string, platformId: string) => Promise<void>;
   applyRewrite: (postId: string, platformId: string, action: RewriteAction) => Promise<void>;
-  applyAllSuggestions: (postId: string, platformId: string) => Promise<void>;
+  applyAllSuggestions: (postId: string, platformId: string, defaultCta: string) => Promise<void>;
   updateDraftText: (
     postId: string,
     platformId: string,
@@ -182,7 +182,7 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
   const createDraft = useCallback(
     (
       organizationId: string,
-      contentType: ContentTypeId,
+      contentType: string,
       prompt: string,
       imageStyles: string[],
       targets: { platformId: string; accountId: string | null }[],
@@ -309,7 +309,7 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
   );
 
   const applyAllSuggestions = useCallback(
-    async (postId: string, platformId: string) => {
+    async (postId: string, platformId: string, defaultCta: string) => {
       const post = state.posts.find((p) => p.id === postId);
       const draft = post?.drafts.find((d) => d.platformId === platformId);
       if (!post || !draft) return;
@@ -319,7 +319,7 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       let hashtags = draft.hashtags;
 
       if (!suggestions.find((s) => s.id === "cta")?.met) {
-        caption = `${caption.trim()}\n\n${defaultCtaFor(post.contentType)}`;
+        caption = `${caption.trim()}\n\n${defaultCta}`;
       }
       if (!suggestions.find((s) => s.id === "first-paragraph")?.met) {
         caption = breakLongFirstParagraph(caption);

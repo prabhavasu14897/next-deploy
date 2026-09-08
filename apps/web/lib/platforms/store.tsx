@@ -1,18 +1,9 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
 import type { CredentialField, Platform, PlatformDraft, PlatformIntegrationConfig } from "../organizations/types";
-import { SEED_PLATFORMS, SEED_PLATFORM_INTEGRATIONS } from "../organizations/platform-catalog";
-import { makeId } from "../organizations/id";
-
-const STORAGE_KEY = "ascentware.smp.platforms.v1";
+import * as api from "./api-client";
+import type { PlatformPayload, PlatformResponse } from "./api-client";
 
 interface State {
   platforms: Platform[];
@@ -20,11 +11,7 @@ interface State {
   hydrated: boolean;
 }
 
-type Action =
-  | { type: "hydrate"; state: Omit<State, "hydrated"> | null }
-  | { type: "create_platform"; platform: Platform; integration: PlatformIntegrationConfig }
-  | { type: "update_platform"; id: string; updates: Partial<PlatformDraft> }
-  | { type: "delete_platform"; id: string };
+type Action = { type: "set"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> };
 
 const initialState: State = {
   platforms: [],
@@ -34,56 +21,79 @@ const initialState: State = {
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case "hydrate": {
-      // First-ever load (nothing in storage yet): seed from the app's
-      // original three platforms rather than starting empty.
-      if (!action.state) {
-        return { platforms: SEED_PLATFORMS, integrations: SEED_PLATFORM_INTEGRATIONS, hydrated: true };
-      }
-      return { ...action.state, hydrated: true };
-    }
-    case "create_platform":
-      return {
-        ...state,
-        platforms: [...state.platforms, action.platform],
-        integrations: { ...state.integrations, [action.platform.id]: action.integration },
-      };
-    case "update_platform": {
-      const { credentialFields, credentials, ...catalogUpdates } = action.updates;
-      return {
-        ...state,
-        platforms: state.platforms.map((p) => (p.id === action.id ? { ...p, ...catalogUpdates } : p)),
-        integrations:
-          credentialFields === undefined && credentials === undefined
-            ? state.integrations
-            : {
-                ...state.integrations,
-                [action.id]: {
-                  ...state.integrations[action.id],
-                  ...(credentialFields !== undefined ? { credentialFields } : {}),
-                  ...(credentials !== undefined ? { credentials } : {}),
-                },
-              },
-      };
-    }
-    case "delete_platform":
-      return {
-        ...state,
-        platforms: state.platforms.filter((p) => p.id !== action.id),
-        integrations: Object.fromEntries(
-          Object.entries(state.integrations).filter(([id]) => id !== action.id)
-        ),
-      };
+    case "set":
+      return { platforms: action.platforms, integrations: action.integrations, hydrated: true };
     default:
       return state;
   }
 }
 
+// The catalog now lives in a real database (see apps/api's Platforms
+// module) — this turns the API's response shape into the same
+// Platform/PlatformIntegrationConfig pair every existing consumer already
+// expects, so nothing downstream needs to change. A secret field's value
+// is never sent back by the API; `credentials[key]` becomes a masked
+// placeholder when one is set, or "" when it isn't — good enough for any
+// "is this configured" check, never the real value.
+function toPlatformAndIntegration(response: PlatformResponse): {
+  platform: Platform;
+  integration: PlatformIntegrationConfig;
+} {
+  const platform: Platform = {
+    id: response.id,
+    name: response.name,
+    summary: response.summary,
+    accountNoun: response.accountNoun,
+    accountNounPlural: response.accountNounPlural,
+    apiBaseUrl: response.apiBaseUrl,
+  };
+
+  const credentialFields: CredentialField[] = response.credentialFields.map((f) => ({
+    key: f.key,
+    label: f.label,
+    secret: f.secret,
+  }));
+  const credentials: Record<string, string> = Object.fromEntries(
+    response.credentialFields.map((f) => [f.key, f.secret ? (f.hasValue ? "••••••••" : "") : f.value ?? ""])
+  );
+
+  const integration: PlatformIntegrationConfig = {
+    platformId: response.id,
+    authType: "oauth2-mock",
+    scopes: [],
+    // Vestigial — real Connect no longer simulates latency/failure/discovery
+    // volume, but the type is shared with Organizations' older shape.
+    simulatedLatencyMsRange: [0, 0],
+    simulatedFailureRate: 0,
+    accountCountRange: [0, 0],
+    credentialFields,
+    credentials,
+  };
+
+  return { platform, integration };
+}
+
+function toPayload(draft: PlatformDraft): PlatformPayload {
+  return {
+    name: draft.name,
+    summary: draft.summary,
+    accountNoun: draft.accountNoun,
+    accountNounPlural: draft.accountNounPlural,
+    apiBaseUrl: draft.apiBaseUrl,
+    credentialFields: draft.credentialFields.map((f) => ({
+      key: f.key,
+      label: f.label,
+      secret: f.secret,
+      value: draft.credentials[f.key] ?? "",
+    })),
+  };
+}
+
 interface PlatformsContextValue {
   state: State;
-  createPlatform: (draft: PlatformDraft) => string;
-  updatePlatform: (id: string, updates: Partial<PlatformDraft>) => void;
-  deletePlatform: (id: string) => void;
+  createPlatform: (draft: PlatformDraft) => Promise<string>;
+  updatePlatform: (id: string, updates: PlatformDraft) => Promise<void>;
+  deletePlatform: (id: string) => Promise<void>;
   platformById: (id: string) => Platform | undefined;
   integrationFor: (id: string) => PlatformIntegrationConfig | undefined;
 }
@@ -93,56 +103,52 @@ const PlatformsContext = createContext<PlatformsContextValue | null>(null);
 export function PlatformsProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
+  const refetch = useCallback(async () => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      dispatch({ type: "hydrate", state: raw ? JSON.parse(raw) : null });
+      const responses = await api.listPlatforms();
+      const platforms: Platform[] = [];
+      const integrations: Record<string, PlatformIntegrationConfig> = {};
+      for (const response of responses) {
+        const pair = toPlatformAndIntegration(response);
+        platforms.push(pair.platform);
+        integrations[pair.platform.id] = pair.integration;
+      }
+      dispatch({ type: "set", platforms, integrations });
     } catch {
-      dispatch({ type: "hydrate", state: null });
+      // API unreachable — hydrate empty rather than hang forever; surfaces
+      // as the same honest empty state every other zero-data view shows.
+      dispatch({ type: "set", platforms: [], integrations: {} });
     }
   }, []);
 
   useEffect(() => {
-    if (!state.hydrated) return;
-    try {
-      const persisted = { platforms: state.platforms, integrations: state.integrations };
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
-    } catch {
-      // storage unavailable (private mode, quota) — state still works in-memory
-    }
-  }, [state]);
+    refetch();
+  }, [refetch]);
 
-  const createPlatform = useCallback((draft: PlatformDraft) => {
-    const id = makeId("platform");
-    const platform: Platform = {
-      id,
-      name: draft.name.trim(),
-      summary: draft.summary.trim(),
-      accountNoun: draft.accountNoun.trim(),
-      accountNounPlural: draft.accountNounPlural.trim(),
-    };
-    const fields: CredentialField[] = draft.credentialFields;
-    const integration: PlatformIntegrationConfig = {
-      platformId: id,
-      authType: "oauth2-mock",
-      scopes: [],
-      simulatedLatencyMsRange: [900, 1800],
-      simulatedFailureRate: 0.15,
-      accountCountRange: [3, 40],
-      credentialFields: fields,
-      credentials: draft.credentials,
-    };
-    dispatch({ type: "create_platform", platform, integration });
-    return id;
-  }, []);
+  const createPlatform = useCallback(
+    async (draft: PlatformDraft) => {
+      const created = await api.createPlatform(toPayload(draft));
+      await refetch();
+      return created.id;
+    },
+    [refetch]
+  );
 
-  const updatePlatform = useCallback((id: string, updates: Partial<PlatformDraft>) => {
-    dispatch({ type: "update_platform", id, updates });
-  }, []);
+  const updatePlatform = useCallback(
+    async (id: string, updates: PlatformDraft) => {
+      await api.updatePlatform(id, toPayload(updates));
+      await refetch();
+    },
+    [refetch]
+  );
 
-  const deletePlatform = useCallback((id: string) => {
-    dispatch({ type: "delete_platform", id });
-  }, []);
+  const deletePlatform = useCallback(
+    async (id: string) => {
+      await api.deletePlatform(id);
+      await refetch();
+    },
+    [refetch]
+  );
 
   const platformById = useCallback(
     (id: string) => state.platforms.find((p) => p.id === id),

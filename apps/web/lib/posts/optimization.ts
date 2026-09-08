@@ -1,4 +1,4 @@
-import type { ContentTypeId, OptimizationResult } from "./types";
+import type { OptimizationResult } from "./types";
 
 const CTA_PHRASES = [
   "apply",
@@ -64,19 +64,6 @@ export function scorePost({ caption, hashtags }: { caption: string; hashtags: st
   const score = 65 + suggestions.filter((s) => s.met).reduce((sum, s) => sum + s.delta, 0);
 
   return { score: Math.min(100, score), suggestions };
-}
-
-const DEFAULT_CTA: Record<ContentTypeId, string> = {
-  jd: "If you're ready for the challenge, apply now!",
-  birthday: "Join us in wishing them a fantastic year ahead!",
-  workAnniversary: "Join us in celebrating this milestone!",
-  achievement: "Congratulations to everyone involved!",
-  event: "RSVP today — we'd love to see you there!",
-  generalPost: "Learn more today!",
-};
-
-export function defaultCtaFor(contentType: ContentTypeId): string {
-  return DEFAULT_CTA[contentType];
 }
 
 const DEFAULT_BENEFIT_SENTENCE = "Great benefits and a supportive team culture await.";

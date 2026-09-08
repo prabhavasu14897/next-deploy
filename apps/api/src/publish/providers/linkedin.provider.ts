@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ProviderError, ProviderNotConfiguredException } from '../../common/provider-exceptions.js';
 import type { PublishInput, PublishProvider, PublishResult } from '../publish-provider.interface.js';
 
@@ -11,14 +10,12 @@ const LINKEDIN_VERSION = '202401';
 export class LinkedInProvider implements PublishProvider {
   readonly key = 'linkedin';
 
-  constructor(private readonly config: ConfigService) {}
-
-  async publish({ imageBase64, caption }: PublishInput): Promise<PublishResult> {
-    const accessToken = this.config.get<string>('LINKEDIN_ACCESS_TOKEN');
-    const orgUrn = this.config.get<string>('LINKEDIN_ORG_URN');
+  async publish({ imageBase64, caption, credentials }: PublishInput): Promise<PublishResult> {
+    const accessToken = credentials['access-token'];
+    const orgUrn = credentials['organization-urn'];
     if (!accessToken || !orgUrn) {
       throw new ProviderNotConfiguredException(
-        "LinkedIn publishing isn't configured yet — set LINKEDIN_ACCESS_TOKEN and LINKEDIN_ORG_URN on the API server.",
+        "LinkedIn publishing isn't configured yet — add an Access Token and Organization URN to the LinkedIn platform in Add Platform.",
       );
     }
 

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ProviderError, ProviderNotConfiguredException } from '../../common/provider-exceptions.js';
 import type { PublishInput, PublishProvider, PublishResult } from '../publish-provider.interface.js';
 
@@ -10,14 +9,12 @@ const GRAPH_VERSION = 'v21.0';
 export class FacebookProvider implements PublishProvider {
   readonly key = 'facebook';
 
-  constructor(private readonly config: ConfigService) {}
-
-  async publish({ imageBase64, caption }: PublishInput): Promise<PublishResult> {
-    const accessToken = this.config.get<string>('FACEBOOK_PAGE_ACCESS_TOKEN');
-    const pageId = this.config.get<string>('FACEBOOK_PAGE_ID');
+  async publish({ imageBase64, caption, credentials }: PublishInput): Promise<PublishResult> {
+    const accessToken = credentials['page-access-token'];
+    const pageId = credentials['page-id'];
     if (!accessToken || !pageId) {
       throw new ProviderNotConfiguredException(
-        "Facebook publishing isn't configured yet — set FACEBOOK_PAGE_ACCESS_TOKEN and FACEBOOK_PAGE_ID on the API server.",
+        "Facebook publishing isn't configured yet — add a Page Access Token and Page ID to the Facebook platform in Add Platform.",
       );
     }
 
