@@ -20,9 +20,9 @@ importers:
 
   apps/api:
     dependencies:
-      '@libsql/client':
-        specifier: ^0.18.0
-        version: 0.18.0
+      '@neondatabase/serverless':
+        specifier: ^1.0.2
+        version: 1.1.0
       '@nestjs/common':
         specifier: ^12.0.1
         version: 12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
@@ -38,7 +38,7 @@ importers:
       '@nestjs/platform-express':
         specifier: ^12.0.1
         version: 12.0.1(@nestjs/common@12.0.1(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.0.1)(supports-color@7.2.0)
-      '@prisma/adapter-libsql':
+      '@prisma/adapter-neon':
         specifier: ^7.10.0
         version: 7.10.0
       '@prisma/client':
@@ -47,6 +47,9 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1(supports-color@7.2.0)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -1154,69 +1157,6 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha1-2xXWeByTHzolGj2sOVAcmKYIL9A=}
 
-  '@libsql/client@0.17.4':
-    resolution: {integrity: sha1-NBxkkTh1p6GVIRsvLDQYo8t625Y=}
-
-  '@libsql/client@0.18.0':
-    resolution: {integrity: sha1-F2+otv7JDSTmQFqTN17EjSUqD84=}
-
-  '@libsql/core@0.17.4':
-    resolution: {integrity: sha1-L5cu/5rLip0uZQztZkIzQ2qbTsY=}
-
-  '@libsql/core@0.18.0':
-    resolution: {integrity: sha1-EQQqE6zIfxnwNsPdFQBxV7CUpCY=}
-
-  '@libsql/darwin-arm64@0.5.29':
-    resolution: {integrity: sha1-7iuCQiLscVTEubxPYSEyFNYt2lI=}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@libsql/darwin-x64@0.5.29':
-    resolution: {integrity: sha1-iA1XdijmNotM+o2BknmILb6jlec=}
-    cpu: [x64]
-    os: [darwin]
-
-  '@libsql/hrana-client@0.10.0':
-    resolution: {integrity: sha1-lio/xBOnxYgMbV0FE/HTrDGCJOw=}
-
-  '@libsql/isomorphic-ws@0.1.5':
-    resolution: {integrity: sha1-4tH6+WW6DzvpMB+/VkAWTQPE5gY=}
-
-  '@libsql/linux-arm-gnueabihf@0.5.29':
-    resolution: {integrity: sha1-Y21uCfYJt5CjArQGpJ2s7JnnDso=}
-    cpu: [arm]
-    os: [linux]
-
-  '@libsql/linux-arm-musleabihf@0.5.29':
-    resolution: {integrity: sha1-cVjvfy9NDaUbkLhVdTczorOuV2U=}
-    cpu: [arm]
-    os: [linux]
-
-  '@libsql/linux-arm64-gnu@0.5.29':
-    resolution: {integrity: sha1-k9bfUlvyRIhiJdf5u/i7gszDbq8=}
-    cpu: [arm64]
-    os: [linux]
-
-  '@libsql/linux-arm64-musl@0.5.29':
-    resolution: {integrity: sha1-OI/hXrZe+hAfKuy4h05o3VEnqbs=}
-    cpu: [arm64]
-    os: [linux]
-
-  '@libsql/linux-x64-gnu@0.5.29':
-    resolution: {integrity: sha1-MbErvelcmZDl+03ftv9pAn09BBw=}
-    cpu: [x64]
-    os: [linux]
-
-  '@libsql/linux-x64-musl@0.5.29':
-    resolution: {integrity: sha1-DN7S3GRW+6dhZzVbpRlwhCOCBNs=}
-    cpu: [x64]
-    os: [linux]
-
-  '@libsql/win32-x64-msvc@0.5.29':
-    resolution: {integrity: sha1-shP+BKy6CZCQOqXvZruSC5o/6bs=}
-    cpu: [x64]
-    os: [win32]
-
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha1-Hj5L0Fwcx6Cy3b2KA/OfbktebP4=}
     engines: {node: '>=8'}
@@ -1239,8 +1179,9 @@ packages:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
 
-  '@neon-rs/load@0.0.4':
-    resolution: {integrity: sha1-Kioyksbx/vBD9JiGcS08lqVHUy4=}
+  '@neondatabase/serverless@1.1.0':
+    resolution: {integrity: sha1-NQRtESWTIVPdMGvT18JpMGkU4AU=}
+    engines: {node: '>=19.0.0'}
 
   '@nestjs/cli@12.0.0':
     resolution: {integrity: sha1-RjK0Zi0Vjbjeu2F6ChCJwG9cw0A=}
@@ -1649,8 +1590,8 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha1-a3kDLnYKCJnNQgRxC+7elyo6GF8=}
 
-  '@prisma/adapter-libsql@7.10.0':
-    resolution: {integrity: sha1-p00MEI0o7T1TyB2Ws7xt9niy4i4=}
+  '@prisma/adapter-neon@7.10.0':
+    resolution: {integrity: sha1-uRPSViMIs2p0SyiUE2VbYHUQRVA=}
 
   '@prisma/client-runtime-utils@7.10.0':
     resolution: {integrity: sha1-bA5b/PQzCar72JvmYBcuYVCUXOU=}
@@ -3210,9 +3151,6 @@ packages:
   '@types/use-sync-external-store@0.0.6':
     resolution: {integrity: sha1-YL6NIbqrjDBRMuucuRLtSXhSqtw=}
 
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha1-SEZOS/Ld/RfbE9hFRn9gcP/qSqk=}
-
   '@typescript-eslint/eslint-plugin@8.70.0':
     resolution: {integrity: sha1-WfY1x03R4r/7auy9pVeyTa3/09w=}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -3642,9 +3580,6 @@ packages:
     resolution: {integrity: sha1-UJyfymDq+FA0xoKYOBiOTkyP+ys=}
     engines: {node: '>= 0.4'}
 
-  async-mutex@0.5.0:
-    resolution: {integrity: sha1-NTxpoLnnUlCXGmSsIDsOv93XVII=}
-
   asynckit@0.4.0:
     resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=}
 
@@ -3948,10 +3883,6 @@ packages:
     resolution: {integrity: sha1-i3cxYmVtHRCGeEyPI6VM5tc9eRg=}
     engines: {node: '>= 0.6'}
 
-  content-type@2.0.0:
-    resolution: {integrity: sha1-L7Pt5p3/oK94ynxM51iWgGOLVt8=}
-    engines: {node: '>=18'}
-
   content-type@2.1.0:
     resolution: {integrity: sha1-2TicQ8Coz2o1XbRk0h4HCSpASTo=}
     engines: {node: '>=18'}
@@ -4205,10 +4136,6 @@ packages:
 
   destr@2.0.5:
     resolution: {integrity: sha1-fREv8bkl+40gefrFvbSpCXO1H9s=}
-
-  detect-libc@2.0.2:
-    resolution: {integrity: sha1-jM8rqTFTUOEkG4jQrDsOH72ZYF0=}
-    engines: {node: '>=8'}
 
   detect-libc@2.1.2:
     resolution: {integrity: sha1-aJxdzcGQDvVYOky59te0c3QgdK0=}
@@ -5238,9 +5165,6 @@ packages:
     resolution: {integrity: sha1-l0Io8vTKK8IYhaF5e0X+po6VDGQ=}
     hasBin: true
 
-  js-base64@3.9.3:
-    resolution: {integrity: sha1-d7NKogp2XRUL5of8NI1Z/n0CIYg=}
-
   js-tokens@10.0.0:
     resolution: {integrity: sha1-3/51mbSou3/jCv+NAjUjTf+3mDE=}
 
@@ -5326,11 +5250,6 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha1-rkViwAdHO5MqYgDUAyaN0v/8at4=}
     engines: {node: '>= 0.8.0'}
-
-  libsql@0.5.29:
-    resolution: {integrity: sha1-HlMV7cqATdWs4b+Ru3Xz7Nz7WyQ=}
-    cpu: [x64, arm64, wasm32, arm]
-    os: [darwin, linux, win32]
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha1-8DOIURbf79nG9UeHUj41FLYeGWg=}
@@ -6125,6 +6044,10 @@ packages:
     resolution: {integrity: sha1-NJNVARb0eEhymDAdLC6NxaVuZZQ=}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgres-array@3.0.4:
+    resolution: {integrity: sha1-TvyvTSxojYvKqGIO0T818pn3Uow=}
+    engines: {node: '>=12'}
+
   postgres@3.4.7:
     resolution: {integrity: sha1-Ei9GCoCP4wDK5T9ZIQi5kG5iU0U=}
     engines: {node: '>=12'}
@@ -6161,9 +6084,6 @@ packages:
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha1-eCDZsWEgzFXKmud5JoCufbptf+I=}
-
-  promise-limit@2.7.0:
-    resolution: {integrity: sha1-61c3wzNCoDDq6uzqmz06k8tZKyY=}
 
   prop-types@15.8.1:
     resolution: {integrity: sha1-Z9h78aaU9IQ1zzMsJK8QIUoxQLU=}
@@ -7363,18 +7283,6 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=}
 
-  ws@8.21.3:
-    resolution: {integrity: sha1-ZgtPrdtqPldchuB4EmkZlh9N5Pw=}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   xml-name-validator@5.0.0:
     resolution: {integrity: sha1-gr6blX96/az5YeWYDxvyJ8C/dnM=}
     engines: {node: '>=18'}
@@ -8462,79 +8370,6 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@libsql/client@0.17.4':
-    dependencies:
-      '@libsql/core': 0.17.4
-      '@libsql/hrana-client': 0.10.0
-      js-base64: 3.9.3
-      libsql: 0.5.29
-      promise-limit: 2.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@libsql/client@0.18.0':
-    dependencies:
-      '@libsql/core': 0.18.0
-      '@libsql/hrana-client': 0.10.0
-      js-base64: 3.9.3
-      libsql: 0.5.29
-      promise-limit: 2.7.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@libsql/core@0.17.4':
-    dependencies:
-      js-base64: 3.9.3
-
-  '@libsql/core@0.18.0':
-    dependencies:
-      js-base64: 3.9.3
-
-  '@libsql/darwin-arm64@0.5.29':
-    optional: true
-
-  '@libsql/darwin-x64@0.5.29':
-    optional: true
-
-  '@libsql/hrana-client@0.10.0':
-    dependencies:
-      '@libsql/isomorphic-ws': 0.1.5
-      js-base64: 3.9.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@libsql/isomorphic-ws@0.1.5':
-    dependencies:
-      '@types/ws': 8.18.1
-      ws: 8.21.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@libsql/linux-arm-gnueabihf@0.5.29':
-    optional: true
-
-  '@libsql/linux-arm-musleabihf@0.5.29':
-    optional: true
-
-  '@libsql/linux-arm64-gnu@0.5.29':
-    optional: true
-
-  '@libsql/linux-arm64-musl@0.5.29':
-    optional: true
-
-  '@libsql/linux-x64-gnu@0.5.29':
-    optional: true
-
-  '@libsql/linux-x64-musl@0.5.29':
-    optional: true
-
-  '@libsql/win32-x64-msvc@0.5.29':
-    optional: true
-
   '@lukeed/csprng@1.1.0': {}
 
   '@module-federation/error-codes@2.8.1': {}
@@ -8566,7 +8401,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.3
     optional: true
 
-  '@neon-rs/load@0.0.4': {}
+  '@neondatabase/serverless@1.1.0': {}
 
   '@nestjs/cli@12.0.0(@types/node@24.13.2)(prettier@3.9.6)':
     dependencies:
@@ -8777,7 +8612,7 @@ snapshots:
       '@octokit/endpoint': 11.0.3
       '@octokit/request-error': 7.1.0
       '@octokit/types': 16.0.0
-      content-type: 2.0.0
+      content-type: 2.1.0
       json-with-bigint: 3.5.8
       universal-user-agent: 7.0.3
 
@@ -8870,14 +8705,11 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@prisma/adapter-libsql@7.10.0':
+  '@prisma/adapter-neon@7.10.0':
     dependencies:
-      '@libsql/client': 0.17.4
+      '@neondatabase/serverless': 1.1.0
       '@prisma/driver-adapter-utils': 7.10.0
-      async-mutex: 0.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
+      postgres-array: 3.0.4
 
   '@prisma/client-runtime-utils@7.10.0': {}
 
@@ -11927,10 +11759,6 @@ snapshots:
 
   '@types/use-sync-external-store@0.0.6': {}
 
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 24.13.2
-
   '@typescript-eslint/eslint-plugin@8.70.0(@typescript-eslint/parser@8.70.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -12414,10 +12242,6 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  async-mutex@0.5.0:
-    dependencies:
-      tslib: 2.8.1
-
   asynckit@0.4.0: {}
 
   attr-accept@2.2.5: {}
@@ -12459,7 +12283,7 @@ snapshots:
   body-parser@2.3.0(supports-color@7.2.0):
     dependencies:
       bytes: 3.1.2
-      content-type: 2.0.0
+      content-type: 2.1.0
       debug: 4.4.3(supports-color@7.2.0)
       http-errors: 2.0.1
       iconv-lite: 0.7.3
@@ -12731,8 +12555,6 @@ snapshots:
 
   content-type@1.0.5: {}
 
-  content-type@2.0.0: {}
-
   content-type@2.1.0: {}
 
   conventional-changelog-angular@7.0.0:
@@ -12959,8 +12781,6 @@ snapshots:
   dequal@2.0.3: {}
 
   destr@2.0.5: {}
-
-  detect-libc@2.0.2: {}
 
   detect-libc@2.1.2: {}
 
@@ -14188,8 +14008,6 @@ snapshots:
 
   jiti@2.7.0: {}
 
-  js-base64@3.9.3: {}
-
   js-tokens@10.0.0: {}
 
   js-tokens@4.0.0: {}
@@ -14281,21 +14099,6 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
-
-  libsql@0.5.29:
-    dependencies:
-      '@neon-rs/load': 0.0.4
-      detect-libc: 2.0.2
-    optionalDependencies:
-      '@libsql/darwin-arm64': 0.5.29
-      '@libsql/darwin-x64': 0.5.29
-      '@libsql/linux-arm-gnueabihf': 0.5.29
-      '@libsql/linux-arm-musleabihf': 0.5.29
-      '@libsql/linux-arm64-gnu': 0.5.29
-      '@libsql/linux-arm64-musl': 0.5.29
-      '@libsql/linux-x64-gnu': 0.5.29
-      '@libsql/linux-x64-musl': 0.5.29
-      '@libsql/win32-x64-msvc': 0.5.29
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -14986,6 +14789,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postgres-array@3.0.4: {}
+
   postgres@3.4.7: {}
 
   prelude-ls@1.2.1: {}
@@ -15020,8 +14825,6 @@ snapshots:
       - react-dom
 
   process-nextick-args@2.0.1: {}
-
-  promise-limit@2.7.0: {}
 
   prop-types@15.8.1:
     dependencies:
@@ -16194,7 +15997,7 @@ snapshots:
 
   type-is@2.1.0:
     dependencies:
-      content-type: 2.0.0
+      content-type: 2.1.0
       media-typer: 1.1.1
       mime-types: 3.0.2
 
@@ -16602,8 +16405,6 @@ snapshots:
       strip-ansi: 7.2.0
 
   wrappy@1.0.2: {}
-
-  ws@8.21.3: {}
 
   xml-name-validator@5.0.0: {}
 
