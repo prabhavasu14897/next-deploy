@@ -21,7 +21,7 @@ export function MobileSidebarDrawer({ onClose }: { onClose: () => void }) {
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex sm:hidden">
+    <div className="fixed inset-0 z-[70] flex lg:hidden">
       <div className="absolute inset-0 animate-fade-in bg-surface-container-lowest/70" onClick={onClose} aria-hidden="true" />
       <div
         role="dialog"

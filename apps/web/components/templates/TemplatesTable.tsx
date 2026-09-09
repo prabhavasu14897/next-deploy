@@ -22,7 +22,7 @@ export function TemplatesTable({
   return (
     <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-left">
+        <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
               {HEADERS.map((header) => (
@@ -31,7 +31,7 @@ export function TemplatesTable({
                   scope="col"
                   className={`px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant ${
                     header === "Actions" ? "text-right" : ""
-                  }`}
+                  } ${header === "Description" ? "hidden sm:table-cell" : ""}`}
                 >
                   {header}
                 </th>
@@ -61,7 +61,7 @@ export function TemplatesTable({
                         <span className="text-[14px] font-semibold text-on-surface">{template.label}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="hidden px-4 py-3 sm:table-cell">
                       <p className="max-w-md text-[12px] text-on-surface-variant">{template.description}</p>
                     </td>
                     <td className="px-4 py-3">

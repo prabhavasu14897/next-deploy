@@ -5,7 +5,7 @@ description: Master orchestration skill. Triages developer requirements (bug/fea
 
 # Project Orchestrator
 
-This skill acts as the front door for all new developer requests, client requirements, feature implementations, and bug fixes. It is a masterpiece orchestration skill that ensures no code is written until the context is perfectly clear, and the right specialized skills (Impeccable, Vercel Best Practices, Ascentware rules) are utilized.
+This skill acts as the front door for all new developer requests, client requirements, feature implementations, and bug fixes. It is a masterpiece orchestration skill that ensures no code is written until the context is perfectly clear, and the right specialized skills (Impeccable, Vercel Best Practices, Ascentware rules, Ascentware Frontend Standards) are utilized.
 
 ## Workflow
 
@@ -36,7 +36,7 @@ Based on the classification, delegate tasks to subagents:
 - Use `invoke_subagent` to spawn specialized agents.
 - **IMPORTANT**: When prompting the subagent, explicitly instruct it to read and apply the relevant skills by providing the path to those skills (e.g., "You must read and follow d:\\Development\\enterprise-starter\\.agents\\skills\\impeccable\\SKILL.md").
 - Example Delegation:
-  - Frontend/UI features -> Spawn a subagent instructed to use the `impeccable` and `design-taste-frontend` skills.
+  - Frontend/UI features -> Spawn a subagent instructed to use the `impeccable`, `design-taste-frontend`, and `ascentware-frontend-standards` skills.
   - React/Next.js logic -> Spawn a subagent instructed to use the `vercel-react-best-practices` skill.
   - Backend/Architecture -> Spawn a subagent instructed to use the `ascentware-project` skill.
 

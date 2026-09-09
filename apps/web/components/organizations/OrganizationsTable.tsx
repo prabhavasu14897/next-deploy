@@ -41,7 +41,7 @@ export function OrganizationsTable({
     <>
       <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-left">
+          <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
                 {HEADERS.map((header) => (
@@ -50,7 +50,7 @@ export function OrganizationsTable({
                     scope="col"
                     className={`px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant ${
                       header === "Actions" ? "text-right" : ""
-                    }`}
+                    } ${header === "Platforms" ? "hidden sm:table-cell" : ""}`}
                   >
                     {header}
                   </th>
@@ -105,7 +105,7 @@ export function OrganizationsTable({
                           </span>
                         </button>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="flex items-center gap-1.5">
                           {platforms.map((platform) => {
                             const connection = connections.find((c) => c.platformId === platform.id);

@@ -132,16 +132,16 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
 
       <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-left">
+          <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
                 {HEADERS.map((header) => (
                   <th
                     key={header}
                     scope="col"
-                    className={`px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant ${
+                    className={`px-2 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant sm:px-4 ${
                       header === "Actions" ? "text-right" : ""
-                    }`}
+                    } ${header === "Created" ? "hidden sm:table-cell" : ""}`}
                   >
                     {header}
                   </th>
@@ -151,7 +151,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
             <tbody>
               {pageItems.length === 0 ? (
                 <tr>
-                  <td colSpan={HEADERS.length} className="px-4 py-14 text-center">
+                  <td colSpan={HEADERS.length} className="px-2 py-14 text-center sm:px-4">
                     <EmptyState
                       title="No posts found"
                       description={
@@ -167,10 +167,10 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                   const type = templateById(post.contentType);
                   return (
                     <tr key={post.id} className="border-b border-outline-variant dark:border-white/[0.06] transition-colors last:border-b-0 hover:bg-surface-container-highest dark:hover:bg-white/[0.04]">
-                      <td className="px-4 py-3">
+                      <td className="px-2 py-3 sm:px-4">
                         <span className="text-[14px] font-semibold text-on-surface">{type?.label ?? post.contentType}</span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 py-3 sm:px-4">
                         <div className="flex flex-wrap gap-1.5">
                           {post.drafts.map((draft) => (
                             <Badge key={draft.platformId} tone={TONE_BY_STATUS[draft.status]}>
@@ -179,10 +179,10 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                           ))}
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <p className="text-[12px] text-on-surface-variant">{formatDate(post.createdAt)}</p>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 py-3 sm:px-4">
                         <div className="flex justify-end">
                           <IconButton label={`Delete ${type?.label ?? "post"}`} onClick={() => setDeleteTarget(post)}>
                             <TrashIcon className="h-4 w-4" />
