@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import type { ConnectionStatus, OrganizationDraft } from "@/lib/organizations/types";
 import { useOrganizations } from "@/lib/organizations/store";
-import { aggregateStatus } from "@/lib/organizations/derive";
+import { aggregateStatus, deriveOrgCode } from "@/lib/organizations/derive";
+import { DEMO_ORGANIZATIONS } from "@/lib/demo-data";
 import { OrganizationsTable } from "./OrganizationsTable";
 import { OrgCard } from "./OrgCard";
 import { CreateOrganizationWizard } from "./CreateOrganizationWizard";
@@ -12,7 +13,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { PlusIcon, SearchIcon, ListIcon, GridIcon } from "@/components/ui/icons";
+import { PlusIcon, SearchIcon, ListIcon, GridIcon, SparklesIcon } from "@/components/ui/icons";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 type View = "list" | "grid";
 type StatusFilter = "all" | ConnectionStatus;
@@ -60,6 +62,24 @@ export function OrganizationsView() {
       ? `No organizations match “${query}”.`
       : "No organizations match the selected filter.";
 
+  function seedSampleOrganizations() {
+    for (const sample of DEMO_ORGANIZATIONS) {
+      createOrganization({
+        name: sample.name,
+        code: deriveOrgCode(sample.name),
+        logoDataUrl: null,
+        description: sample.description,
+        website: "",
+        industry: sample.industry,
+        country: "",
+        timezone: "",
+        status: "active",
+        platformIds: [],
+        platformPages: {},
+      });
+    }
+  }
+
   function openStrip(id: string, editMode = false) {
     setActiveOrganization(id);
     setOpenOrgId(id);
@@ -86,7 +106,7 @@ export function OrganizationsView() {
   }
 
   if (!state.hydrated) {
-    return <div className="min-h-full bg-background" />;
+    return <PageLoading />;
   }
 
   if (createOpen) {
@@ -109,10 +129,16 @@ export function OrganizationsView() {
               Connect a platform to an organization, then choose which accounts it manages.
             </p>
           </div>
-          <Button variant="primary" size="md" onClick={() => setCreateOpen(true)} className="shrink-0">
-            <PlusIcon className="h-4 w-4" />
-            Add Organization
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button variant="secondary" size="md" onClick={seedSampleOrganizations}>
+              <SparklesIcon className="h-4 w-4" />
+              Load sample data
+            </Button>
+            <Button variant="primary" size="md" onClick={() => setCreateOpen(true)}>
+              <PlusIcon className="h-4 w-4" />
+              Add Organization
+            </Button>
+          </div>
         </div>
 
         {hasOrganizations && (
@@ -169,12 +195,6 @@ export function OrganizationsView() {
           <EmptyState
             title="No organizations yet"
             description="Add your first organization to start connecting its social platforms."
-            action={
-              <Button variant="primary" size="sm" onClick={() => setCreateOpen(true)}>
-                <PlusIcon className="h-4 w-4" />
-                Add Organization
-              </Button>
-            }
           />
         ) : view === "list" ? (
           <OrganizationsTable

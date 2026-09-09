@@ -20,11 +20,11 @@ export function TemplatesTable({
   onDelete: (template: ContentTemplate) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-white/15">
+    <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
-            <tr className="border-b border-white/10 bg-white/[0.03]">
+            <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
               {HEADERS.map((header) => (
                 <th
                   key={header}
@@ -52,7 +52,7 @@ export function TemplatesTable({
               templates.map((template) => {
                 const Icon = iconFor(template.iconKey);
                 return (
-                  <tr key={template.id} className="border-b border-white/[0.06] transition-colors last:border-b-0 hover:bg-white/[0.04]">
+                  <tr key={template.id} className="border-b border-outline-variant dark:border-white/[0.06] transition-colors last:border-b-0 hover:bg-surface-container-highest dark:hover:bg-white/[0.04]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">

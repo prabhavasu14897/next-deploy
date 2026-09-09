@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Organization } from "@/lib/organizations/types";
 import { usePosts } from "@/lib/posts/store";
 import { useTemplates } from "@/lib/templates/store";
+import { usePlatforms } from "@/lib/platforms/store";
 import { StepTypeAndPlatform, type PlatformTarget } from "./steps/StepTypeAndPlatform";
 import { StepPrompt } from "./steps/StepPrompt";
 import { StepEditor } from "./steps/StepEditor";
@@ -32,8 +33,9 @@ export function PostWizard({
   organizationId: string;
   onOrganizationChange: (id: string) => void;
 }) {
-  const { state, createDraft } = usePosts();
-  const { templateById } = useTemplates();
+  const { state, createDraft, createTestDraft } = usePosts();
+  const { state: templatesState, templateById } = useTemplates();
+  const { state: platformsState } = usePlatforms();
   const [step, setStep] = useState<StepId>("type");
   const [contentType, setContentType] = useState<string | null>(null);
   const [targets, setTargets] = useState<PlatformTarget[]>([]);
@@ -82,6 +84,34 @@ export function PostWizard({
 
   const canLeaveType = !!organizationId && !!contentType && targets.length > 0;
 
+  // Demo-only: fills type/platform/prompt with sample data and jumps
+  // straight to a populated Editor step, bypassing "Generate with AI"
+  // (which needs the backend) entirely via createTestDraft.
+  function fillTestDataAndGenerate() {
+    if (!organizationId) return;
+    const template = (contentType && templateById(contentType)) || templatesState.templates[0];
+    const firstPlatform = platformsState.platforms[0];
+    const targetList = targets.length > 0 ? targets : firstPlatform ? [{ platformId: firstPlatform.id, accountId: null }] : [];
+    if (!template || targetList.length === 0) return;
+
+    const promptText =
+      prompt.trim() || template.promptTemplate.replaceAll("{orgName}", organizationName) || "Sample post content.";
+
+    setContentType(template.id);
+    setTargets(targetList);
+    setPrompt(promptText);
+
+    const postId = createTestDraft(organizationId, template.id, promptText, targetList);
+    if (postId) {
+      setActivePostId(postId);
+      setActivePlatformId(targetList[0].platformId);
+      setStep("editor");
+    }
+  }
+
+  const canFillTestData =
+    !activePost && templatesState.templates.length > 0 && (targets.length > 0 || platformsState.platforms.length > 0);
+
   return (
     <div className="space-y-6">
       <ol className="flex flex-wrap items-center gap-1.5">
@@ -96,7 +126,7 @@ export function PostWizard({
                 s.id === step
                   ? "bg-primary text-on-primary"
                   : i < stepIndex
-                    ? "bg-white/[0.08] text-on-surface"
+                    ? "bg-surface-variant dark:bg-white/[0.08] text-on-surface"
                     : "bg-transparent text-on-surface-variant ring-1 ring-inset ring-outline-variant"
               }`}
             >
@@ -107,7 +137,7 @@ export function PostWizard({
         ))}
       </ol>
 
-      <div className="rounded-lg border border-white/15 bg-white/[0.02] p-5">
+      <div className="rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-low dark:bg-white/[0.02] p-5">
         {step === "type" && (
           <StepTypeAndPlatform
             organizations={organizations}
@@ -147,10 +177,18 @@ export function PostWizard({
       </div>
 
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="md" disabled={stepIndex === 0} onClick={goBack}>
-          <BackIcon className="h-4 w-4" />
-          Back
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="md" disabled={stepIndex === 0} onClick={goBack}>
+            <BackIcon className="h-4 w-4" />
+            Back
+          </Button>
+          {(step === "type" || step === "prompt") && (
+            <Button variant="secondary" size="md" disabled={!canFillTestData} onClick={fillTestDataAndGenerate}>
+              <SparklesIcon className="h-4 w-4" />
+              Fill test data
+            </Button>
+          )}
+        </div>
 
         {step === "prompt" ? (
           <Button variant="primary" size="md" disabled={!prompt.trim()} onClick={handleGenerate}>

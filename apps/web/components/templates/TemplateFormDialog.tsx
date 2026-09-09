@@ -107,7 +107,7 @@ export function TemplateFormDialog({
                     aria-label={`Use ${key} icon`}
                     onClick={() => update("iconKey", key)}
                     className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
-                      active ? "border-primary bg-primary/10 text-primary" : "border-white/15 text-on-surface-variant hover:bg-white/[0.06]"
+                      active ? "border-primary bg-primary/10 text-primary" : "border-outline-variant dark:border-white/15 text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-white/[0.06]"
                     }`}
                   >
                     <Icon className="h-4 w-4" />

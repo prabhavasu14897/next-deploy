@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
 import type { CredentialField, Platform, PlatformDraft, PlatformIntegrationConfig } from "../organizations/types";
+import { makeId } from "../organizations/id";
+import { DEMO_PLATFORMS } from "../demo-data";
 import * as api from "./api-client";
 import type { PlatformPayload, PlatformResponse } from "./api-client";
 
@@ -11,7 +13,12 @@ interface State {
   hydrated: boolean;
 }
 
-type Action = { type: "set"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> };
+type Action =
+  | { type: "set"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> }
+  // Demo-only: appends locally-built entries without going through the API,
+  // since the catalog is otherwise entirely server-backed. Never persisted —
+  // a refetch (e.g. a page reload) replaces state with the real API result.
+  | { type: "seed_local"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> };
 
 const initialState: State = {
   platforms: [],
@@ -23,6 +30,12 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "set":
       return { platforms: action.platforms, integrations: action.integrations, hydrated: true };
+    case "seed_local":
+      return {
+        platforms: [...state.platforms, ...action.platforms],
+        integrations: { ...state.integrations, ...action.integrations },
+        hydrated: true,
+      };
     default:
       return state;
   }
@@ -96,6 +109,8 @@ interface PlatformsContextValue {
   deletePlatform: (id: string) => Promise<void>;
   platformById: (id: string) => Platform | undefined;
   integrationFor: (id: string) => PlatformIntegrationConfig | undefined;
+  /** Demo-only: appends sample platforms locally, bypassing the API. */
+  seedDemoPlatforms: () => void;
 }
 
 const PlatformsContext = createContext<PlatformsContextValue | null>(null);
@@ -160,9 +175,44 @@ export function PlatformsProvider({ children }: { children: React.ReactNode }) {
     [state.integrations]
   );
 
+  // Demo/offline seed: the real create/update/delete actions all require
+  // the backend API, so this bypasses it entirely for a "show it populated"
+  // demo — local only, wiped by the next successful refetch (e.g. a reload).
+  const seedDemoPlatforms = useCallback(() => {
+    const platforms: Platform[] = [];
+    const integrations: Record<string, PlatformIntegrationConfig> = {};
+    for (const sample of DEMO_PLATFORMS) {
+      const id = makeId("platform");
+      platforms.push({
+        id,
+        name: sample.name,
+        summary: sample.summary,
+        accountNoun: sample.accountNoun,
+        accountNounPlural: sample.accountNounPlural,
+        apiBaseUrl: sample.apiBaseUrl,
+      });
+      const credentialFields: CredentialField[] = sample.credentialFields.map((f) => ({
+        key: f.key,
+        label: f.label,
+        secret: f.secret,
+      }));
+      integrations[id] = {
+        platformId: id,
+        authType: "oauth2-mock",
+        scopes: [],
+        simulatedLatencyMsRange: [0, 0],
+        simulatedFailureRate: 0,
+        accountCountRange: [0, 0],
+        credentialFields,
+        credentials: Object.fromEntries(credentialFields.map((f) => [f.key, ""])),
+      };
+    }
+    dispatch({ type: "seed_local", platforms, integrations });
+  }, []);
+
   const value = useMemo<PlatformsContextValue>(
-    () => ({ state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor }),
-    [state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor]
+    () => ({ state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms }),
+    [state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms]
   );
 
   return <PlatformsContext.Provider value={value}>{children}</PlatformsContext.Provider>;

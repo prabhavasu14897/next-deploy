@@ -1,12 +1,16 @@
-/**
- * A precise lettermark badge in the brand's primary blue — clean and
- * geometric per the "Architectural" typographic character, not a drawn
- * illustration.
- */
+import Image from "next/image";
+
+/** The real Ascentware triangle mark — kept at the fixed pixel size the nav
+ *  bar and mobile drawer badge slot were built for. */
 export function BrandMark() {
   return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-[13px] font-extrabold text-on-primary">
-      A
-    </span>
+    <Image
+      src="/brand/ascentware-mark.png"
+      alt="Ascentware"
+      width={24}
+      height={24}
+      className="h-6 w-6 shrink-0"
+      priority
+    />
   );
 }

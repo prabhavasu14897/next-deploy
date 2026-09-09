@@ -38,7 +38,7 @@ export function SidebarNavLinks({
             } ${
               active
                 ? "bg-primary/15 text-primary"
-                : "text-on-surface-variant hover:bg-white/[0.06] hover:text-on-surface"
+                : "text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-white/[0.06] hover:text-on-surface"
             }`}
           >
             <Icon className="h-4 w-4 shrink-0" />

@@ -37,7 +37,7 @@ export function ConnectPlatformDialog({
         </div>
       </div>
 
-      <div className="mt-4 rounded border border-white/10 bg-surface-container-highest p-3">
+      <div className="mt-4 rounded border border-outline-variant dark:border-white/10 bg-surface-container-highest p-3">
         <p className="text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">
           Uses these credentials
         </p>

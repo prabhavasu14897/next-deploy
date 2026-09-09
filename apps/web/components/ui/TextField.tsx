@@ -1,8 +1,9 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
-import { FormField } from "./FormField";
-import { Input } from "./Input";
+import { Field } from "@ascentware/react-ui-library";
 
-interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+// Input's own `size` prop is the library's variant union ("sm"/"lg"/...),
+// not the native numeric HTML attribute — omit it same as the library does.
+interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label: string;
   id: string;
   required?: boolean;
@@ -11,16 +12,13 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   containerClassName?: string;
 }
 
-/** FormField + Input, pre-wired — the pairing every labeled text input in
- *  the app needs (label, htmlFor/id, required mark, hint/error). Reach for
- *  Input directly only for an unlabeled or non-standard layout. */
+/** Thin wrapper around @ascentware/react-ui-library's Field, adding the
+ *  outer-wrapper className this app's grid layouts rely on (the library's
+ *  Field has no such slot of its own). */
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
-  { label, id, required, hint, error, containerClassName, className = "", ...props },
+  { containerClassName, className = "", ...props },
   ref
 ) {
-  return (
-    <FormField label={label} htmlFor={id} required={required} hint={hint} error={error} className={containerClassName}>
-      <Input ref={ref} id={id} className={`w-full ${className}`} {...props} />
-    </FormField>
-  );
+  const field = <Field ref={ref} className={`w-full ${className}`} {...props} />;
+  return containerClassName ? <div className={containerClassName}>{field}</div> : field;
 });

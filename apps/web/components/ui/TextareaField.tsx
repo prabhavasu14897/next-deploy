@@ -1,6 +1,5 @@
 import { forwardRef, type TextareaHTMLAttributes } from "react";
-import { FormField } from "./FormField";
-import { Textarea } from "./Textarea";
+import { TextareaField as LibTextareaField } from "@ascentware/react-ui-library";
 
 interface TextareaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
@@ -11,15 +10,12 @@ interface TextareaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement>
   containerClassName?: string;
 }
 
-/** FormField + Textarea, pre-wired — same pairing as TextField, for a
- *  labeled multi-line input. */
+/** Thin wrapper around @ascentware/react-ui-library's TextareaField, adding
+ *  the outer-wrapper className this app's grid layouts rely on. */
 export const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>(function TextareaField(
-  { label, id, required, hint, error, containerClassName, className = "", ...props },
+  { containerClassName, className = "", ...props },
   ref
 ) {
-  return (
-    <FormField label={label} htmlFor={id} required={required} hint={hint} error={error} className={containerClassName}>
-      <Textarea ref={ref} id={id} className={`w-full ${className}`} {...props} />
-    </FormField>
-  );
+  const field = <LibTextareaField ref={ref} className={`w-full ${className}`} {...props} />;
+  return containerClassName ? <div className={containerClassName}>{field}</div> : field;
 });

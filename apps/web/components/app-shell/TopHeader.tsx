@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { IconButton } from "@/components/ui/Button";
-import { MenuIcon, SettingsIcon, UserIcon } from "@/components/ui/icons";
+import { MenuIcon, UserIcon } from "@/components/ui/icons";
 import { BrandMark } from "./BrandMark";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function TopHeader({
   onOpenMobileNav,
@@ -29,14 +30,11 @@ export function TopHeader({
         </IconButton>
         <Link href="/organizations" className="flex items-center gap-2 text-[14px] font-bold text-on-surface">
           <BrandMark />
-          Ascentware
         </Link>
       </div>
 
       <div className="flex items-center gap-1">
-        <IconButton label="Settings">
-          <SettingsIcon className="h-[18px] w-[18px]" />
-        </IconButton>
+        <ThemeToggle />
         <button
           type="button"
           aria-label="Account"

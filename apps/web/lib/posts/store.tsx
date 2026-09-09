@@ -7,6 +7,7 @@ import type { ApiError } from "./api-client";
 import { breakLongFirstParagraph, defaultBenefitSentence, scorePost } from "./optimization";
 import { makeId } from "../organizations/id";
 import { usePlatforms } from "../platforms/store";
+import { DEMO_IMAGE_BASE64, DEMO_POST_CONTENT } from "../demo-data";
 
 const STORAGE_KEY = "ascentware.smp.posts.v2";
 
@@ -86,6 +87,13 @@ interface PostsContextValue {
     targets: { platformId: string; accountId: string | null }[],
     tone?: ContentTone
   ) => string;
+  /** Demo-only: same shape as createDraft but bypasses AI generation entirely. */
+  createTestDraft: (
+    organizationId: string,
+    contentType: string,
+    prompt: string,
+    targets: { platformId: string; accountId: string | null }[]
+  ) => string;
   regenerateImage: (postId: string, platformId: string, correction?: string) => void;
   generateHashtagsFor: (postId: string, platformId: string) => Promise<void>;
   applyRewrite: (postId: string, platformId: string, action: RewriteAction) => Promise<void>;
@@ -100,6 +108,8 @@ interface PostsContextValue {
   submitPost: (postId: string) => void;
   deletePost: (id: string) => void;
   postsForOrg: (organizationId: string) => Post[];
+  /** Demo-only: adds a few sample "posted" posts directly, bypassing AI generation. */
+  seedDemoPosts: (organizationId: string, platformId: string) => void;
 }
 
 const PostsContext = createContext<PostsContextValue | null>(null);
@@ -245,6 +255,44 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       return post.id;
     },
     [platformById]
+  );
+
+  // Demo-only: builds a complete "ready" post directly with sample content,
+  // no AI call involved — createDraft's captionimage/hashtag generation all
+  // need the backend, so this is what lets the wizard be demoed end to end
+  // (through Editor/Preview) without it running.
+  const createTestDraft = useCallback(
+    (
+      organizationId: string,
+      contentType: string,
+      prompt: string,
+      targets: { platformId: string; accountId: string | null }[]
+    ) => {
+      if (targets.length === 0) return "";
+      const sample = DEMO_POST_CONTENT[Math.floor(Math.random() * DEMO_POST_CONTENT.length)];
+      const post: Post = {
+        id: makeId("post"),
+        organizationId,
+        contentType,
+        prompt,
+        createdAt: new Date().toISOString(),
+        drafts: targets.map((target) => ({
+          platformId: target.platformId,
+          accountId: target.accountId,
+          imageBase64: DEMO_IMAGE_BASE64,
+          imageStyles: [],
+          caption: sample.caption,
+          hashtags: sample.hashtags,
+          tone: "professional",
+          externalPostId: null,
+          scheduledFor: null,
+          ...status("ready"),
+        })),
+      };
+      dispatch({ type: "add_post", post });
+      return post.id;
+    },
+    []
   );
 
   const regenerateImage = useCallback(
@@ -393,10 +441,43 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
     [state.posts]
   );
 
+  // Demo-only: creates a few already-"posted" sample posts directly, no AI
+  // generation call (which needs the backend) involved. platformId/contentType
+  // are whatever the caller currently has on hand — PostHistoryTable already
+  // falls back to the raw id/label when it can't resolve a name for either.
+  const seedDemoPosts = useCallback((organizationId: string, platformId: string) => {
+    const now = Date.now();
+    for (const [index, sample] of DEMO_POST_CONTENT.entries()) {
+      const post: Post = {
+        id: makeId("post"),
+        organizationId,
+        contentType: sample.contentTypeLabel,
+        prompt: sample.prompt,
+        createdAt: new Date(now - index * 86_400_000).toISOString(),
+        drafts: [
+          {
+            platformId,
+            accountId: null,
+            imageBase64: null,
+            imageStyles: [],
+            caption: sample.caption,
+            hashtags: sample.hashtags,
+            tone: "professional",
+            externalPostId: null,
+            scheduledFor: null,
+            ...status("posted"),
+          },
+        ],
+      };
+      dispatch({ type: "add_post", post });
+    }
+  }, []);
+
   const value = useMemo<PostsContextValue>(
     () => ({
       state,
       createDraft,
+      createTestDraft,
       regenerateImage,
       generateHashtagsFor,
       applyRewrite,
@@ -407,10 +488,12 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       submitPost,
       deletePost,
       postsForOrg,
+      seedDemoPosts,
     }),
     [
       state,
       createDraft,
+      createTestDraft,
       regenerateImage,
       generateHashtagsFor,
       applyRewrite,
@@ -421,6 +504,7 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       submitPost,
       deletePost,
       postsForOrg,
+      seedDemoPosts,
     ]
   );
 

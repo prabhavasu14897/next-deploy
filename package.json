@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@ascentware/design-system": "^3.0.0",
+    "@ascentware/react-ui": "^5.11.2",
+    "@ascentware/react-ui-library": "^5.11.3-pr.401.0aa2f65.0"
+  }
+}

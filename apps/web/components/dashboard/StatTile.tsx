@@ -19,7 +19,7 @@ export function StatTile({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 rounded-lg border border-white/15 bg-white/[0.04] px-4 py-3.5 transition-colors hover:bg-white/[0.08]"
+      className="flex items-center gap-3 rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] px-4 py-3.5 transition-colors hover:bg-surface-variant dark:hover:bg-white/[0.08]"
     >
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
         <Icon className="h-5 w-5" />

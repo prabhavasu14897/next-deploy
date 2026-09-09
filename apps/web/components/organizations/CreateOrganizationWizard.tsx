@@ -1,23 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { DraftPage, OrganizationDraft, OrganizationStatus } from "@/lib/organizations/types";
-import { COUNTRIES, INDUSTRIES, TIMEZONES } from "@/lib/organizations/reference-data";
-import { formatFollowers } from "@/lib/organizations/derive";
+import type { DraftPage, OrganizationDraft } from "@/lib/organizations/types";
+import { INDUSTRIES } from "@/lib/organizations/reference-data";
+import { deriveOrgCode, formatFollowers } from "@/lib/organizations/derive";
 import { makeId } from "@/lib/organizations/id";
 import { usePlatforms } from "@/lib/platforms/store";
+import { DEMO_ORGANIZATIONS } from "@/lib/demo-data";
 import { Stepper, type Step } from "@/components/ui/Stepper";
 import { TextField } from "@/components/ui/TextField";
 import { TextareaField } from "@/components/ui/TextareaField";
-import { SelectField } from "@/components/ui/SelectField";
-import { FormField } from "@/components/ui/FormField";
-import { LogoUpload } from "@/components/ui/LogoUpload";
+import { SelectField } from "@ascentware/react-ui-library";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Button, IconButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Dialog } from "@/components/ui/Dialog";
 import { DialogActions } from "@/components/ui/DialogActions";
-import { BackIcon, CheckIcon, PlusIcon } from "@/components/ui/icons";
+import { BackIcon, CheckIcon, PlusIcon, SparklesIcon } from "@/components/ui/icons";
 import { PlatformBadge } from "./PlatformBadge";
 
 const STEPS: Step[] = [
@@ -65,6 +64,7 @@ export function CreateOrganizationWizard({
 }) {
   const {
     state: { platforms: wizardPlatforms },
+    seedDemoPlatforms,
   } = usePlatforms();
   const [stepIndex, setStepIndex] = useState(0);
   const [draft, setDraft] = useState<OrganizationDraft>(EMPTY_DRAFT);
@@ -98,12 +98,7 @@ export function CreateOrganizationWizard({
 
   const reviewRows = [
     { label: "Organization Name", value: draft.name },
-    { label: "Organization Code", value: draft.code },
     { label: "Industry", value: draft.industry },
-    { label: "Website", value: draft.website },
-    { label: "Country", value: draft.country },
-    { label: "Timezone", value: TIMEZONES.find((t) => t.value === draft.timezone)?.label || draft.timezone },
-    { label: "Status", value: draft.status === "active" ? "Active" : "Inactive" },
     { label: "Description", value: draft.description },
   ];
 
@@ -145,11 +140,34 @@ export function CreateOrganizationWizard({
     setAddPageOpen(false);
   }
 
-  const basicsValid =
-    draft.name.trim().length > 0 &&
-    draft.code.trim().length > 0 &&
-    draft.country.trim().length > 0 &&
-    draft.timezone.trim().length > 0;
+  // Demo-only: fills the current step with sample data — one button per
+  // step, matching each step's own fields.
+  function fillBasicsTestData() {
+    const sample = DEMO_ORGANIZATIONS[Math.floor(Math.random() * DEMO_ORGANIZATIONS.length)];
+    setDraft((d) => ({ ...d, name: sample.name, industry: sample.industry, description: sample.description }));
+  }
+
+  function fillPlatformsTestData() {
+    if (wizardPlatforms.length === 0) {
+      seedDemoPlatforms();
+      return; // platforms arrive on the next render; click again to select them
+    }
+    setDraft((d) => ({ ...d, platformIds: wizardPlatforms.map((p) => p.id) }));
+  }
+
+  function fillPagesTestData() {
+    if (!activeTab || !activePlatform) return;
+    const samplePages: DraftPage[] = [
+      { id: makeId("draftpage"), name: `${activePlatform.name} Main`, type: activePlatform.accountNoun, followers: 12_400, selected: true },
+      { id: makeId("draftpage"), name: `${activePlatform.name} Support`, type: activePlatform.accountNoun, followers: 3_150, selected: true },
+    ];
+    setDraft((d) => ({
+      ...d,
+      platformPages: { ...d.platformPages, [activeTab]: [...(d.platformPages[activeTab] ?? []), ...samplePages] },
+    }));
+  }
+
+  const basicsValid = draft.name.trim().length > 0;
   // Review & Confirm is the last step with a decision to make; success is a
   // terminal display after it, not a step the footer's Back/Next row applies
   // to (STEPS.length - 1).
@@ -169,7 +187,7 @@ export function CreateOrganizationWizard({
     e.preventDefault();
     if (isReviewStep) {
       if (!basicsValid) return;
-      onCreate(draft);
+      onCreate({ ...draft, code: deriveOrgCode(draft.name) });
       setStepIndex(STEPS.length - 1);
       return;
     }
@@ -203,7 +221,14 @@ export function CreateOrganizationWizard({
 
       <form onSubmit={submit} className="max-w-4xl">
         {stepIndex === 0 && (
-          <div className="grid grid-cols-1 items-start gap-x-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <div className="mb-4 flex justify-end">
+              <Button type="button" variant="secondary" size="sm" onClick={fillBasicsTestData}>
+                <SparklesIcon className="h-4 w-4" />
+                Fill test data
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 items-start gap-x-4 gap-y-5 sm:grid-cols-2">
             <TextField
               label="Organization name"
               id="org-name"
@@ -213,18 +238,13 @@ export function CreateOrganizationWizard({
               placeholder="e.g. Acme Retail"
               autoFocus
             />
-            <TextField
-              label="Code"
-              id="org-code"
-              required
-              hint="A short unique identifier, e.g. ACME."
-              value={draft.code}
-              onChange={(e) => update("code", e.target.value.toUpperCase())}
-              placeholder="ACME"
+            <SelectField
+              label="Industry"
+              placeholder="Select an industry"
+              value={draft.industry}
+              onValueChange={(v) => update("industry", v)}
+              options={INDUSTRIES.map((i) => ({ value: i, label: i }))}
             />
-            <FormField label="Logo" htmlFor="org-logo-trigger">
-              <LogoUpload value={draft.logoDataUrl} onChange={(v) => update("logoDataUrl", v)} />
-            </FormField>
             <TextareaField
               label="Description"
               id="org-description"
@@ -232,82 +252,26 @@ export function CreateOrganizationWizard({
               onChange={(e) => update("description", e.target.value)}
               rows={3}
               placeholder="What this organization is, for your own reference."
+              containerClassName="sm:col-span-2"
             />
-            <TextField
-              label="Website"
-              id="org-website"
-              type="url"
-              hint="Include https://"
-              value={draft.website}
-              onChange={(e) => update("website", e.target.value)}
-              placeholder="https://example.com"
-            />
-            <SelectField
-              label="Industry"
-              id="org-industry"
-              value={draft.industry}
-              onChange={(e) => update("industry", e.target.value)}
-            >
-              <option value="" disabled>
-                Select an industry
-              </option>
-              {INDUSTRIES.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField
-              label="Country"
-              id="org-country"
-              required
-              value={draft.country}
-              onChange={(e) => update("country", e.target.value)}
-            >
-              <option value="" disabled>
-                Select a country
-              </option>
-              {COUNTRIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField
-              label="Timezone"
-              id="org-timezone"
-              required
-              value={draft.timezone}
-              onChange={(e) => update("timezone", e.target.value)}
-            >
-              <option value="" disabled>
-                Select a timezone
-              </option>
-              {TIMEZONES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField
-              label="Status"
-              id="org-status"
-              required
-              value={draft.status}
-              onChange={(e) => update("status", e.target.value as OrganizationStatus)}
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </SelectField>
+            </div>
           </div>
         )}
 
         {stepIndex === 1 && (
           <div>
-            <h2 className="text-[16px] font-bold text-on-surface">Select Platforms</h2>
-            <p className="mt-1 text-[14px] text-on-surface-variant">
-              Select the social media platforms that the organization will use.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[16px] font-bold text-on-surface">Select Platforms</h2>
+                <p className="mt-1 text-[14px] text-on-surface-variant">
+                  Select the social media platforms that the organization will use.
+                </p>
+              </div>
+              <Button type="button" variant="secondary" size="sm" onClick={fillPlatformsTestData}>
+                <SparklesIcon className="h-4 w-4" />
+                Fill test data
+              </Button>
+            </div>
             <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {wizardPlatforms.map((platform) => {
                 const selected = draft.platformIds.includes(platform.id);
@@ -317,7 +281,7 @@ export function CreateOrganizationWizard({
                     className={`flex cursor-pointer flex-col gap-3 rounded-lg border p-4 transition-colors ${
                       selected
                         ? "border-primary/40 bg-primary/10 hover:bg-primary/15"
-                        : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08]"
+                        : "border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] hover:bg-surface-variant dark:hover:bg-white/[0.08]"
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -351,7 +315,7 @@ export function CreateOrganizationWizard({
               />
             ) : (
               <div className="mt-5">
-                <div className="flex flex-wrap gap-1 border-b border-white/10">
+                <div className="flex flex-wrap gap-1 border-b border-outline-variant dark:border-white/10">
                   {selectedPlatforms.map((platform) => {
                     const tabActive = platform.id === activeTab;
                     return (
@@ -382,17 +346,23 @@ export function CreateOrganizationWizard({
                       this organization.
                     </p>
                   </div>
-                  <Button type="button" variant="secondary" size="sm" onClick={openAddPage}>
-                    <PlusIcon className="h-4 w-4" />
-                    Add {activePlatform.name} {activePlatform.accountNoun}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="secondary" size="sm" onClick={fillPagesTestData}>
+                      <SparklesIcon className="h-4 w-4" />
+                      Fill test data
+                    </Button>
+                    <Button type="button" variant="secondary" size="sm" onClick={openAddPage}>
+                      <PlusIcon className="h-4 w-4" />
+                      Add {activePlatform.name} {activePlatform.accountNoun}
+                    </Button>
+                  </div>
                 </div>
 
-                <div className="mt-3 overflow-hidden rounded-lg border border-white/15">
+                <div className="mt-3 overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[480px] border-collapse text-left">
                       <thead>
-                        <tr className="border-b border-white/10 bg-white/[0.03]">
+                        <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
                           <th className="px-4 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant">
                             Name
                           </th>
@@ -416,7 +386,7 @@ export function CreateOrganizationWizard({
                           </tr>
                         ) : (
                           activePages.map((page) => (
-                            <tr key={page.id} className="border-b border-white/[0.06] last:border-b-0">
+                            <tr key={page.id} className="border-b border-outline-variant dark:border-white/[0.06] last:border-b-0">
                               <td className="px-4 py-2.5 text-[14px] font-semibold text-on-surface">{page.name}</td>
                               <td className="px-4 py-2.5 text-[12px] text-on-surface-variant">{page.type}</td>
                               <td className="px-4 py-2.5 text-[12px] text-on-surface-variant tabular">
@@ -451,7 +421,7 @@ export function CreateOrganizationWizard({
             </p>
 
             <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <div className="rounded-lg border border-white/15 bg-white/[0.04] p-5">
+              <div className="rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] p-5">
                 <h3 className="text-[14px] font-bold text-on-surface">Organization Details</h3>
                 <dl className="mt-4 space-y-3">
                   {reviewRows.map((row) => (
@@ -463,7 +433,7 @@ export function CreateOrganizationWizard({
                 </dl>
               </div>
 
-              <div className="rounded-lg border border-white/15 bg-white/[0.04] p-5">
+              <div className="rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] p-5">
                 <h3 className="text-[14px] font-bold text-on-surface">Selected Platforms &amp; Pages/Accounts</h3>
                 {selectedPlatforms.length === 0 ? (
                   <p className="mt-3 text-[12px] text-on-surface-variant">No platforms selected.</p>
@@ -517,7 +487,7 @@ export function CreateOrganizationWizard({
         )}
 
         {!isSuccessStep && (
-          <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5">
+          <div className="mt-8 flex items-center justify-between border-t border-outline-variant dark:border-white/10 pt-5">
             <Button type="button" variant="ghost" size="sm" onClick={stepIndex === 0 ? onClose : back}>
               {stepIndex === 0 ? "Cancel" : "Back"}
             </Button>

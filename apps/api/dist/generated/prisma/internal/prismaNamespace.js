@@ -28,6 +28,9 @@ export const ModelName = {
     CredentialField: 'CredentialField'
 };
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
 });
 export const PlatformScalarFieldEnum = {
@@ -52,6 +55,10 @@ export const CredentialFieldScalarFieldEnum = {
 export const SortOrder = {
     asc: 'asc',
     desc: 'desc'
+};
+export const QueryMode = {
+    default: 'default',
+    insensitive: 'insensitive'
 };
 export const defineExtension = runtime.Extensions.defineExtension;
 //# sourceMappingURL=prismaNamespace.js.map

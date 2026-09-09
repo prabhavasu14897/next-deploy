@@ -1,9 +1,8 @@
-import { CheckIcon } from "./icons";
+import { Checkbox as LibCheckbox } from "@ascentware/react-ui-library";
 
-/** The account-selection checkbox visual — solid white fill with a deep-blue
- *  check when selected, an outline box when not (the spec's literal
- *  instruction). Renders the visual box plus the real input; wrap it in a
- *  <label> for the click target rather than passing an id/htmlFor. */
+/** checked/onChange()-shaped wrapper around the library's Radix-based
+ *  Checkbox (which uses checked/onCheckedChange) — preserves this app's
+ *  existing call-site API. */
 export function Checkbox({
   checked,
   onChange,
@@ -13,14 +12,5 @@ export function Checkbox({
   onChange: () => void;
   label?: string;
 }) {
-  return (
-    <span
-      className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded border transition-colors ${
-        checked ? "border-white bg-white text-on-primary-fixed-variant" : "border-outline bg-transparent text-transparent"
-      }`}
-    >
-      <CheckIcon className="h-3 w-3" />
-      <input type="checkbox" checked={checked} onChange={onChange} aria-label={label} className="sr-only" />
-    </span>
-  );
+  return <LibCheckbox checked={checked} onCheckedChange={() => onChange()} aria-label={label} />;
 }

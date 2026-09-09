@@ -27,12 +27,11 @@ export function MobileSidebarDrawer({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label="Navigation"
-        className="relative flex h-full w-64 max-w-[80vw] animate-slide-in-left flex-col border-r border-white/15 bg-surface-container-lowest shadow-[16px_0_40px_-12px_rgba(0,0,0,0.5)]"
+        className="relative flex h-full w-64 max-w-[80vw] animate-slide-in-left flex-col border-r border-outline-variant dark:border-white/15 bg-surface-container-lowest shadow-[16px_0_40px_-12px_rgba(0,0,0,0.5)]"
       >
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2 text-[14px] font-semibold text-on-surface">
             <BrandMark />
-            Ascentware
           </div>
           <IconButton label="Close navigation" onClick={onClose}>
             <CloseIcon className="h-4 w-4" />

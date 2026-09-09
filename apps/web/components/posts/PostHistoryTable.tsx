@@ -104,6 +104,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
             setPage(0);
           }}
           aria-label="Filter by platform"
+          className="w-full sm:w-44"
         >
           <option value="all">All Platforms</option>
           {platformsState.platforms.map((platform) => (
@@ -119,6 +120,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
             setPage(0);
           }}
           aria-label="Filter by status"
+          className="w-full sm:w-44"
         >
           {STATUS_FILTERS.map((f) => (
             <option key={f.value} value={f.value}>
@@ -128,11 +130,11 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
         </Select>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-white/15">
+      <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-left">
             <thead>
-              <tr className="border-b border-white/10 bg-white/[0.03]">
+              <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
                 {HEADERS.map((header) => (
                   <th
                     key={header}
@@ -164,7 +166,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                 pageItems.map((post) => {
                   const type = templateById(post.contentType);
                   return (
-                    <tr key={post.id} className="border-b border-white/[0.06] transition-colors last:border-b-0 hover:bg-white/[0.04]">
+                    <tr key={post.id} className="border-b border-outline-variant dark:border-white/[0.06] transition-colors last:border-b-0 hover:bg-surface-container-highest dark:hover:bg-white/[0.04]">
                       <td className="px-4 py-3">
                         <span className="text-[14px] font-semibold text-on-surface">{type?.label ?? post.contentType}</span>
                       </td>
@@ -196,7 +198,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
         </div>
 
         {filtered.length > PAGE_SIZE && (
-          <div className="flex items-center justify-between border-t border-white/10 px-4 py-2.5">
+          <div className="flex items-center justify-between border-t border-outline-variant dark:border-white/10 px-4 py-2.5">
             <p className="text-[12px] text-on-surface-variant">
               Page {currentPage + 1} of {pageCount}
             </p>

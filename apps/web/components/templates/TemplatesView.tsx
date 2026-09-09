@@ -5,11 +5,13 @@ import type { ContentTemplate, ContentTemplateDraft } from "@/lib/templates/type
 import { useTemplates } from "@/lib/templates/store";
 import { usePosts } from "@/lib/posts/store";
 import { isTemplateInUse } from "@/lib/templates/derive";
+import { DEMO_TEMPLATES } from "@/lib/demo-data";
 import { TemplatesTable } from "./TemplatesTable";
 import { TemplateFormDialog } from "./TemplateFormDialog";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { PlusIcon } from "@/components/ui/icons";
+import { PlusIcon, SparklesIcon } from "@/components/ui/icons";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 export function TemplatesView() {
   const { state: templatesState, createTemplate, updateTemplate, deleteTemplate } = useTemplates();
@@ -41,8 +43,14 @@ export function TemplatesView() {
 
   const deleteBlocked = deleteTarget ? isTemplateInUse(deleteTarget.id, postsState.posts) : false;
 
+  function seedSampleTemplates() {
+    for (const sample of DEMO_TEMPLATES) {
+      createTemplate(sample);
+    }
+  }
+
   if (!templatesState.hydrated || !postsState.hydrated) {
-    return <div className="min-h-full bg-background" />;
+    return <PageLoading />;
   }
 
   return (
@@ -55,10 +63,16 @@ export function TemplatesView() {
               Manage the content-type catalog the Post wizard offers.
             </p>
           </div>
-          <Button variant="primary" size="md" onClick={openCreate} className="shrink-0">
-            <PlusIcon className="h-4 w-4" />
-            Create Template
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button variant="secondary" size="md" onClick={seedSampleTemplates}>
+              <SparklesIcon className="h-4 w-4" />
+              Load sample data
+            </Button>
+            <Button variant="primary" size="md" onClick={openCreate}>
+              <PlusIcon className="h-4 w-4" />
+              Create Template
+            </Button>
+          </div>
         </div>
       </header>
 

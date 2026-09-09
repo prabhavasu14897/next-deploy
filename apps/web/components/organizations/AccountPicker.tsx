@@ -63,9 +63,9 @@ export function AccountPicker({
         role="dialog"
         aria-modal="true"
         aria-labelledby="account-picker-title"
-        className="relative flex h-full w-full max-w-md animate-slide-in-right flex-col border-l border-white/15 bg-surface-container-high shadow-[-16px_0_40px_-12px_rgba(0,0,0,0.5)]"
+        className="relative flex h-full w-full max-w-md animate-slide-in-right flex-col border-l border-outline-variant dark:border-white/15 bg-surface-container-high shadow-[-16px_0_40px_-12px_rgba(0,0,0,0.5)]"
       >
-        <div className="flex items-start gap-2 border-b border-white/10 px-5 py-4">
+        <div className="flex items-start gap-2 border-b border-outline-variant dark:border-white/10 px-5 py-4">
           <IconButton label="Back to organization" onClick={onClose}>
             <BackIcon className="h-4 w-4" />
           </IconButton>
@@ -79,7 +79,7 @@ export function AccountPicker({
           </div>
         </div>
 
-        <div className="space-y-2.5 border-b border-white/10 px-5 py-3">
+        <div className="space-y-2.5 border-b border-outline-variant dark:border-white/10 px-5 py-3">
           <div className="relative">
             <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-on-surface-variant" />
             <Input
@@ -111,8 +111,8 @@ export function AccountPicker({
             </li>
           )}
           {filtered.map((account) => (
-            <li key={account.id} className="border-b border-white/[0.06] last:border-b-0">
-              <label className="flex cursor-pointer items-center gap-3 rounded px-3 py-2.5 hover:bg-white/[0.06]">
+            <li key={account.id} className="border-b border-outline-variant dark:border-white/[0.06] last:border-b-0">
+              <label className="flex cursor-pointer items-center gap-3 rounded px-3 py-2.5 hover:bg-surface-container-highest dark:hover:bg-white/[0.06]">
                 <Checkbox
                   checked={account.selected}
                   onChange={() => toggleAccountSelected(account.id)}
@@ -134,7 +134,7 @@ export function AccountPicker({
           ))}
         </ul>
 
-        <div className="border-t border-white/10 px-5 py-3">
+        <div className="border-t border-outline-variant dark:border-white/10 px-5 py-3">
           <p className="text-[12px] text-on-surface-variant">
             Selections save immediately and persist for this organization.
           </p>

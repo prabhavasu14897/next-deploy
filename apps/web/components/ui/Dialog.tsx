@@ -55,7 +55,7 @@ export function Dialog({
         aria-labelledby={titleId ?? labelledBy}
         tabIndex={-1}
         style={{ width }}
-        className="relative max-w-full rounded-lg border border-white/20 bg-surface-container-high/95 p-5 backdrop-blur-md outline-none"
+        className="relative max-w-full rounded-lg border border-outline-variant dark:border-white/20 bg-surface-container-high/95 p-5 backdrop-blur-md outline-none"
       >
         <IconButton
           label="Close dialog"

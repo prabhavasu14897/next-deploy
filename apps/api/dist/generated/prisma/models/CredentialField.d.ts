@@ -361,6 +361,7 @@ export type CredentialFieldCreateOrConnectWithoutPlatformInput = {
 };
 export type CredentialFieldCreateManyPlatformInputEnvelope = {
     data: Prisma.CredentialFieldCreateManyPlatformInput | Prisma.CredentialFieldCreateManyPlatformInput[];
+    skipDuplicates?: boolean;
 };
 export type CredentialFieldUpsertWithWhereUniqueWithoutPlatformInput = {
     where: Prisma.CredentialFieldWhereUniqueInput;
@@ -600,11 +601,13 @@ export type CredentialFieldCreateArgs<ExtArgs extends runtime.Types.Extensions.I
 };
 export type CredentialFieldCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     data: Prisma.CredentialFieldCreateManyInput | Prisma.CredentialFieldCreateManyInput[];
+    skipDuplicates?: boolean;
 };
 export type CredentialFieldCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.CredentialFieldSelectCreateManyAndReturn<ExtArgs> | null;
     omit?: Prisma.CredentialFieldOmit<ExtArgs> | null;
     data: Prisma.CredentialFieldCreateManyInput | Prisma.CredentialFieldCreateManyInput[];
+    skipDuplicates?: boolean;
     include?: Prisma.CredentialFieldIncludeCreateManyAndReturn<ExtArgs> | null;
 };
 export type CredentialFieldUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {

@@ -35,7 +35,7 @@ export function OrgCard({
       className={`flex w-full flex-col gap-3 rounded-lg border p-4 text-left transition-colors ${
         active
           ? "border-primary/40 bg-primary/10 hover:bg-primary/15"
-          : "border-white/15 bg-white/[0.04] hover:bg-white/[0.08]"
+          : "border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] hover:bg-surface-variant dark:hover:bg-white/[0.08]"
       }`}
     >
       <div className="flex items-start justify-between gap-2">

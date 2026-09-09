@@ -53,7 +53,7 @@ export function StepPublish({ post }: { post: Post }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col items-center gap-4 rounded-lg border border-white/15 bg-white/[0.02] p-5 sm:flex-row sm:items-start">
+      <div className="flex flex-col items-center gap-4 rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-low dark:bg-white/[0.02] p-5 sm:flex-row sm:items-start">
         <OptimizationScoreGauge score={overall.score} size={110} />
         <div className="flex-1 space-y-2">
           <div className="flex items-center justify-between">
@@ -102,12 +102,12 @@ export function StepPublish({ post }: { post: Post }) {
 
       <div className="space-y-3">
         <h2 className="text-[18px] font-semibold text-on-surface">Publish to</h2>
-        <div className="overflow-hidden rounded-lg border border-white/15">
+        <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
           {readyDrafts.map((draft) => {
             const platform = platformById(draft.platformId);
             const mode = modes[draft.platformId] ?? "now";
             return (
-              <div key={draft.platformId} className="flex flex-col gap-2 border-b border-white/[0.06] p-3 last:border-b-0 sm:flex-row sm:items-center">
+              <div key={draft.platformId} className="flex flex-col gap-2 border-b border-outline-variant dark:border-white/[0.06] p-3 last:border-b-0 sm:flex-row sm:items-center">
                 <span className="text-[14px] font-medium text-on-surface sm:w-32">{platform?.name ?? draft.platformId}</span>
                 <div className="flex flex-wrap items-center gap-3">
                   <label className="flex items-center gap-1.5 text-[14px] text-on-surface">

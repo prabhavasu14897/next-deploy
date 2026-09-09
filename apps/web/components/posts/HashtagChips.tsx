@@ -39,7 +39,7 @@ export function HashtagChips({
         {hashtags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 rounded-full bg-white/[0.06] py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-on-surface"
+            className="inline-flex items-center gap-1 rounded-full bg-surface-container-highest dark:bg-white/[0.06] py-1 pl-2.5 pr-1.5 text-[12px] font-medium text-on-surface"
           >
             {tag}
             <button

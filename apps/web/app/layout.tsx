@@ -20,9 +20,29 @@ export const metadata: Metadata = {
   description: "Manage social platform connections across every client organization.",
 };
 
+// Runs before hydration so the right theme is on <html> for the very first
+// paint — no flash of the wrong theme. suppressHydrationWarning on <html>
+// below is required because of this: React would otherwise complain that
+// the class/data-attribute it sees at hydration don't match what it
+// server-rendered, when in fact this script deliberately changed them
+// first, before the user has seen anything.
+const themeInitScript = `(function(){try{var s=localStorage.getItem("asw-theme-mode");var m=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var r=document.documentElement;r.classList.toggle("dark",m==="dark");r.dataset.aswTheme=m==="dark"?"luminous-dark":"luminous-light";}catch(e){}})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${brandSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      // Luminous Dark is the app's primary identity (DESIGN.md) and the
+      // safe fallback for no-JS/pre-hydration; the head script above
+      // corrects this to the user's actual saved/OS preference.
+      data-asw-theme="luminous-dark"
+      className={`dark ${brandSans.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/** biome-ignore lint: static literal, no user input — safe to inline. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="h-full bg-background text-foreground">
         <AppShell>
           <PlatformsProvider>

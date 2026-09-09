@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Organization, OrganizationStatus } from "@/lib/organizations/types";
+import type { Organization } from "@/lib/organizations/types";
 import { useOrganizations } from "@/lib/organizations/store";
 import { usePlatforms } from "@/lib/platforms/store";
 import { formatDate } from "@/lib/organizations/derive";
-import { COUNTRIES, INDUSTRIES, TIMEZONES } from "@/lib/organizations/reference-data";
+import { INDUSTRIES, TIMEZONES } from "@/lib/organizations/reference-data";
+
+// Radix SelectItem can't take an empty-string value, so "no industry chosen"
+// (a real, explicitly re-selectable option here, unlike the other fields'
+// disabled placeholders) is represented by this sentinel and mapped back to
+// "" at the value/onValueChange boundary.
+const NO_INDUSTRY_VALUE = "__no_industry__";
 import { IconButton, Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { TextField } from "@/components/ui/TextField";
 import { TextareaField } from "@/components/ui/TextareaField";
-import { SelectField } from "@/components/ui/SelectField";
-import { FormField } from "@/components/ui/FormField";
-import { LogoUpload } from "@/components/ui/LogoUpload";
+import { SelectField } from "@ascentware/react-ui-library";
 import { CloseIcon, PencilIcon, TrashIcon } from "@/components/ui/icons";
 import { PlatformRow } from "./PlatformRow";
 import { EditPlatformPagesSection } from "./EditPlatformPagesSection";
@@ -45,7 +49,7 @@ export function OrgDetailSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="org-detail-title"
-        className={`relative flex h-full w-full max-w-lg flex-col border-l border-white/15 bg-surface-container-high shadow-[-16px_0_40px_-12px_rgba(0,0,0,0.5)] transition-transform duration-200 ${
+        className={`relative flex h-full w-full max-w-lg flex-col border-l border-outline-variant dark:border-white/15 bg-surface-container-high shadow-[-16px_0_40px_-12px_rgba(0,0,0,0.5)] transition-transform duration-200 ${
           organization ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -117,7 +121,7 @@ function OrgDetailContent({
     setDraft((d) => ({ ...d, [key]: value }));
   }
 
-  const editValid = draft.name.trim().length > 0 && draft.code.trim().length > 0;
+  const editValid = draft.name.trim().length > 0;
 
   function saveEdit(e: React.FormEvent) {
     e.preventDefault();
@@ -125,9 +129,7 @@ function OrgDetailContent({
     updateOrganization(organization.id, {
       ...draft,
       name: draft.name.trim(),
-      code: draft.code.trim(),
       description: draft.description.trim(),
-      website: draft.website.trim(),
     });
     setEditing(false);
   }
@@ -135,7 +137,7 @@ function OrgDetailContent({
   if (editing) {
     return (
       <>
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-outline-variant dark:border-white/10 px-6 py-5">
           <h2 id="org-detail-title" className="text-[18px] font-semibold text-on-surface">
             Edit organization
           </h2>
@@ -155,16 +157,16 @@ function OrgDetailContent({
                 onChange={(e) => update("name", e.target.value)}
                 autoFocus
               />
-              <TextField
-                label="Code"
-                id="edit-org-code"
-                required
-                value={draft.code}
-                onChange={(e) => update("code", e.target.value.toUpperCase())}
+              <SelectField
+                label="Industry"
+                placeholder="Select an industry"
+                value={draft.industry === "" ? NO_INDUSTRY_VALUE : draft.industry}
+                onValueChange={(v) => update("industry", v === NO_INDUSTRY_VALUE ? "" : v)}
+                options={[
+                  { value: NO_INDUSTRY_VALUE, label: "No industry" },
+                  ...INDUSTRIES.map((i) => ({ value: i, label: i })),
+                ]}
               />
-              <FormField label="Logo" htmlFor="edit-org-logo-trigger" className="sm:col-span-2">
-                <LogoUpload value={draft.logoDataUrl} onChange={(v) => update("logoDataUrl", v)} />
-              </FormField>
               <TextareaField
                 label="Description"
                 id="edit-org-description"
@@ -173,76 +175,14 @@ function OrgDetailContent({
                 value={draft.description}
                 onChange={(e) => update("description", e.target.value)}
               />
-              <TextField
-                label="Website"
-                id="edit-org-website"
-                type="url"
-                value={draft.website}
-                onChange={(e) => update("website", e.target.value)}
-              />
-              <SelectField
-                label="Industry"
-                id="edit-org-industry"
-                value={draft.industry}
-                onChange={(e) => update("industry", e.target.value)}
-              >
-                <option value="">Select an industry</option>
-                {INDUSTRIES.map((i) => (
-                  <option key={i} value={i}>
-                    {i}
-                  </option>
-                ))}
-              </SelectField>
-              <SelectField
-                label="Country"
-                id="edit-org-country"
-                required
-                value={draft.country}
-                onChange={(e) => update("country", e.target.value)}
-              >
-                <option value="" disabled>
-                  Select a country
-                </option>
-                {COUNTRIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </SelectField>
-              <SelectField
-                label="Timezone"
-                id="edit-org-timezone"
-                required
-                value={draft.timezone}
-                onChange={(e) => update("timezone", e.target.value)}
-              >
-                <option value="" disabled>
-                  Select a timezone
-                </option>
-                {TIMEZONES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </SelectField>
-              <SelectField
-                label="Status"
-                id="edit-org-status"
-                required
-                value={draft.status}
-                onChange={(e) => update("status", e.target.value as OrganizationStatus)}
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </SelectField>
             </div>
 
-            <div className="mt-6 border-t border-white/10 pt-5">
+            <div className="mt-6 border-t border-outline-variant dark:border-white/10 pt-5">
               <EditPlatformPagesSection organization={organization} />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 border-t border-white/10 px-6 py-4">
+          <div className="flex items-center justify-end gap-2 border-t border-outline-variant dark:border-white/10 px-6 py-4">
             <Button type="button" variant="ghost" size="sm" onClick={() => setEditing(false)}>
               Cancel
             </Button>
@@ -257,7 +197,7 @@ function OrgDetailContent({
 
   return (
     <>
-      <div className="flex items-start gap-3 border-b border-white/10 px-6 py-5">
+      <div className="flex items-start gap-3 border-b border-outline-variant dark:border-white/10 px-6 py-5">
         <Avatar name={organization.name} imageUrl={organization.logoDataUrl} size="md" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
@@ -285,7 +225,7 @@ function OrgDetailContent({
         <h3 className="pt-3 text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">
           Details
         </h3>
-        <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2.5 border-b border-white/10 pb-4 text-[12px]">
+        <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2.5 border-b border-outline-variant dark:border-white/10 pb-4 text-[12px]">
           <div>
             <dt className="text-on-surface-variant">Status</dt>
             <dd className="mt-0.5">

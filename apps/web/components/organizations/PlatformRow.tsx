@@ -32,7 +32,7 @@ export function PlatformRow({
   const selectedCount = accounts.filter((a) => a.selected).length;
 
   return (
-    <li className="flex items-start gap-3 border-b border-white/10 px-1 py-3.5 last:border-b-0">
+    <li className="flex items-start gap-3 border-b border-outline-variant dark:border-white/10 px-1 py-3.5 last:border-b-0">
       <PlatformBadge platform={platform} status={status} size="md" />
 
       <div className="min-w-0 flex-1">

@@ -1,7 +1,88 @@
 @import "tailwindcss";
+@import "@ascentware/design-system/theme.css";
+@import "@ascentware/react-ui-library/styles/globals.css";
+
+/* Tailwind's default content scan skips node_modules; react-ui-library ships
+   pre-built JS with its Tailwind class names baked in (cva()/clsx() output),
+   so the scanner needs to be pointed at it explicitly or those classes never
+   get generated. */
+@source "../node_modules/@ascentware/react-ui-library/dist/**/*.js";
+
+/* Keys `dark:` off the explicit `.dark` class the theme toggle sets (and
+   the "Theming without JavaScript" attribute pattern below relies on),
+   never off `prefers-color-scheme` — the toggle is the source of truth. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Ascentware New Design — "Luminous Dark": a high-contrast dark mode
+  /* Shared across both themes: shape and the one brand font stay constant
+     while every color role below is mode-specific. */
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* "Luminous Light": the same architectural, vibrant-blue identity
+     composed for a bright canvas rather than inverted from the dark
+     theme. Deepened primary/tertiary carry AA text contrast on a light
+     surface; the "fixed" role family is intentionally identical to dark
+     mode's, per Material-3's own fixed-tone semantics — see DESIGN.md. */
+  --background: #eef3f6;
+  --foreground: #0d1e26;
+
+  --surface: #eef3f6;
+  --surface-dim: #d7e0e4;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f7fafb;
+  --surface-container: #ffffff;
+  --surface-container-high: #ffffff;
+  --surface-container-highest: #e4ebee;
+  --surface-variant: #dde5e9;
+  --on-surface: #0d1e26;
+  --on-surface-variant: #45535a;
+  --inverse-surface: #0d1e26;
+  --inverse-on-surface: #eef3f6;
+  --outline: #6b7b83;
+  --outline-variant: #c3d0d6;
+  --surface-tint: #00698f;
+
+  --primary: #00698f;
+  --on-primary: #ffffff;
+  --primary-container: #c7e7f5;
+  --on-primary-container: #003547;
+  --inverse-primary: #6dd2ff;
+
+  --secondary: #565f62;
+  --on-secondary: #ffffff;
+  --secondary-container: #e4e8ea;
+  --on-secondary-container: #3a4245;
+
+  --tertiary: #2f6d8c;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #c9e6f5;
+  --on-tertiary-container: #003547;
+
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  --primary-fixed: #bfe8ff;
+  --primary-fixed-dim: #6dd2ff;
+  --on-primary-fixed: #001f2a;
+  --on-primary-fixed-variant: #004d65;
+
+  --status-success: #146c43;
+  --status-success-container: #d3f4e0;
+  --status-pending-accent: #8a5a13;
+  --status-pending-accent-container: #fbe8c8;
+
+  --focus-ring: var(--primary);
+}
+
+.dark {
+  /* "Luminous Dark" — the original, unchanged high-contrast dark mode
      anchored on an architectural, vibrant blue. Material-3-shaped role
      names so the token set stays traceable to its source spec. */
   --background: #00161f;
@@ -60,13 +141,174 @@
   --status-pending-accent: #f2c078;
   --status-pending-accent-container: #3d2f10;
 
-  --radius-sm: 0.125rem;
-  --radius: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-
   --focus-ring: var(--primary);
+}
+
+/* Luminous Dark, also registered under @ascentware/design-system's own theme
+   contract (see node_modules/@ascentware/design-system/README.md →
+   "Theming without JavaScript"), so any @ascentware/react-ui-library or
+   @ascentware/react-ui component dropped into this app picks up this brand
+   instead of the package's generic default palette. Same source values as
+   the block above (DESIGN.md); this is a second, package-facing name for
+   the identical colors, not a second decision.
+
+   `--background`, `--foreground`, `--primary` and `--secondary` are
+   deliberately left unset here: this app already owns those exact
+   identifiers above as literal hex (consumed unwrapped by Tailwind and by
+   a few components' inline styles), while the design-system reserves them
+   as bare HSL triplets. Setting both on the same selector would make one
+   silently clobber the other. Every other slot below is unique to the
+   design-system's contract, so it layers on top with no collision. The
+   light counterpart, `[data-asw-theme="luminous-light"]`, mirrors this
+   block below with the light palette's own values. */
+.dark[data-asw-theme="luminous-dark"] {
+  color-scheme: dark;
+
+  /* shadcn-family slots (the design-system requires bare HSL triplets here) */
+  --primary-foreground: 195 100% 14%;
+  --secondary-foreground: 180 2% 19%;
+  --card: 198 70% 10%;
+  --card-foreground: 201 65% 88%;
+  --popover: 197 47% 15%;
+  --popover-foreground: 201 65% 88%;
+  --muted: 197 47% 15%;
+  --muted-foreground: 203 16% 78%;
+  --accent: 196 77% 53%;
+  --accent-foreground: 195 100% 17%;
+  --border: 203 11% 27%;
+  --ring: 198 100% 71%;
+  --destructive: 6 100% 84%;
+  --destructive-foreground: 357 100% 21%;
+  --success: 144 61% 69%;
+  --success-foreground: 195 100% 14%;
+  --success-subtle: 155 54% 15%;
+  --success-on-subtle: 144 61% 69%;
+  --warning: 35 82% 71%;
+  --warning-foreground: 41 58% 15%;
+  --warning-subtle: 41 58% 15%;
+  --warning-on-subtle: 35 82% 71%;
+  --danger: 6 100% 84%;
+  --danger-foreground: 357 100% 21%;
+  --danger-subtle: 356 100% 29%;
+  --danger-on-subtle: 6 100% 92%;
+  --nav: 200 100% 5%;
+  --nav-deep: 200 100% 5%;
+  --nav-foreground: 201 65% 88%;
+  --nav-muted-foreground: 203 16% 78%;
+
+  /* --color-* MD3 slots (hex accepted as-is) */
+  --color-background: #00161f;
+  --color-on-background: #cce6f4;
+  --color-surface: #00161f;
+  --color-surface-dim: #00161f;
+  --color-surface-bright: #243c47;
+  --color-surface-container-lowest: #001018;
+  --color-surface-container-low: #031e28;
+  --color-surface-container: #08222d;
+  --color-surface-container-high: #142d37;
+  --color-surface-container-highest: #1f3843;
+  --color-surface-variant: #1f3843;
+  --color-on-surface: #cce6f4;
+  --color-on-surface-variant: #bdc8cf;
+  --color-inverse-surface: #cce6f4;
+  --color-inverse-on-surface: #1b333e;
+  --color-outline: #879299;
+  --color-outline-variant: #3e484e;
+  --color-surface-tint: #6dd2ff;
+  --color-on-primary: #003547;
+  --color-primary-container: #2bb3e4;
+  --color-on-primary-container: #004157;
+  --color-inverse-primary: #006686;
+  --color-primary-fixed: #bfe8ff;
+  --color-primary-fixed-dim: #6dd2ff;
+  --color-on-primary-fixed: #001f2a;
+  --color-on-primary-fixed-variant: #004d65;
+  --color-on-secondary-container: #b4b5b5;
+  --color-secondary-container: #454747;
+  --color-tertiary: #97ceee;
+  --color-on-tertiary: #003549;
+  --color-tertiary-container: #77aecd;
+  --color-on-tertiary-container: #004159;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+}
+
+/* Luminous Light — the light counterpart, registered the same way. No
+   `.dark` in the selector: this is what a package component sees when the
+   toggle is off (see the collision note above the dark block for why
+   `--background`/`--foreground`/`--primary`/`--secondary` stay unset). */
+[data-asw-theme="luminous-light"] {
+  color-scheme: light;
+
+  --primary-foreground: 0 0% 100%;
+  --secondary-foreground: 0 0% 100%;
+  --card: 0 0% 100%;
+  --card-foreground: 199 49% 10%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 199 49% 10%;
+  --muted: 198 23% 91%;
+  --muted-foreground: 200 13% 31%;
+  --accent: 198 70% 87%;
+  --accent-foreground: 195 100% 14%;
+  --border: 199 19% 80%;
+  --ring: 196 100% 28%;
+  --destructive: 0 75% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 69% 25%;
+  --success-foreground: 0 0% 100%;
+  --success-subtle: 144 60% 89%;
+  --success-on-subtle: 152 69% 25%;
+  --warning: 36 76% 31%;
+  --warning-foreground: 0 0% 100%;
+  --warning-subtle: 38 86% 88%;
+  --warning-on-subtle: 36 76% 31%;
+  --danger: 0 75% 42%;
+  --danger-foreground: 0 0% 100%;
+  --danger-subtle: 6 100% 92%;
+  --danger-on-subtle: 356 100% 29%;
+  --nav: 0 0% 100%;
+  --nav-deep: 0 0% 100%;
+  --nav-foreground: 199 49% 10%;
+  --nav-muted-foreground: 200 13% 31%;
+
+  --color-background: #eef3f6;
+  --color-on-background: #0d1e26;
+  --color-surface: #eef3f6;
+  --color-surface-dim: #d7e0e4;
+  --color-surface-bright: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f7fafb;
+  --color-surface-container: #ffffff;
+  --color-surface-container-high: #ffffff;
+  --color-surface-container-highest: #e4ebee;
+  --color-surface-variant: #dde5e9;
+  --color-on-surface: #0d1e26;
+  --color-on-surface-variant: #45535a;
+  --color-inverse-surface: #0d1e26;
+  --color-inverse-on-surface: #eef3f6;
+  --color-outline: #6b7b83;
+  --color-outline-variant: #c3d0d6;
+  --color-surface-tint: #00698f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #c7e7f5;
+  --color-on-primary-container: #003547;
+  --color-inverse-primary: #6dd2ff;
+  --color-primary-fixed: #bfe8ff;
+  --color-primary-fixed-dim: #6dd2ff;
+  --color-on-primary-fixed: #001f2a;
+  --color-on-primary-fixed-variant: #004d65;
+  --color-on-secondary-container: #3a4245;
+  --color-secondary-container: #e4e8ea;
+  --color-tertiary: #2f6d8c;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #c9e6f5;
+  --color-on-tertiary-container: #003547;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
 }
 
 @theme inline {
@@ -114,6 +356,62 @@
   --color-status-success-container: var(--status-success-container);
   --color-status-pending-accent: var(--status-pending-accent);
   --color-status-pending-accent-container: var(--status-pending-accent-container);
+
+  /* Non-color spacing tokens react-ui-library components reference by name
+     (px-btn-x, py-btn-y, p-card-p) — Tailwind v4 only generates those as
+     real utilities from a --spacing-* namespaced key, so the design-system's
+     own --btn-x/--btn-y/--card-p (plain custom properties, not namespaced)
+     need this bridge too, same reason as the color slots below. */
+  --spacing-btn-x: var(--btn-x);
+  --spacing-btn-y: var(--btn-y);
+  --spacing-card-p: var(--card-p);
+
+  /* shadcn-slot bridge: @ascentware/react-ui-library's compiled components
+     use these utility names (bg-card, border-input, ring-ring, etc.). The
+     underlying --card/--popover/--muted/... variables already exist as bare
+     HSL triplets (see .dark[data-asw-theme="luminous-dark"] and
+     [data-asw-theme="luminous-light"] below, with --input/--chart-* falling
+     back to @ascentware/design-system's own defaults) — this is what
+     actually turns them into generated Tailwind classes, which nothing did
+     before. --primary/--secondary stay above as literal hex per the
+     collision note; only their *-foreground counterparts are bare HSL and
+     need the hsl() wrap here. */
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-success-subtle: hsl(var(--success-subtle));
+  --color-success-on-subtle: hsl(var(--success-on-subtle));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-warning-subtle: hsl(var(--warning-subtle));
+  --color-warning-on-subtle: hsl(var(--warning-on-subtle));
+  --color-danger: hsl(var(--danger));
+  --color-danger-foreground: hsl(var(--danger-foreground));
+  --color-danger-subtle: hsl(var(--danger-subtle));
+  --color-danger-on-subtle: hsl(var(--danger-on-subtle));
+  --color-nav: hsl(var(--nav));
+  --color-nav-deep: hsl(var(--nav-deep));
+  --color-nav-foreground: hsl(var(--nav-foreground));
+  --color-nav-muted-foreground: hsl(var(--nav-muted-foreground));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
 }
 
 body {
@@ -136,14 +434,25 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* thin, low-opacity divider per the spec's Lists component */
+/* thin, low-opacity divider per the spec's Lists component. Dark: the
+   literal 10%-white hairline. Light: the same role via outline-variant,
+   since translucent black reads muddy rather than crisp on a light card. */
 .list-divider {
+  border-color: var(--outline-variant);
+}
+.dark .list-divider {
   border-color: rgb(255 255 255 / 0.1);
 }
 
-/* "Frosted Azure": semi-transparent white fill + 20% white border, the
-   spec's card/elevated-surface treatment used in place of shadows */
+/* "Frosted Azure": dark mode's literal translucent-white fill + 20% white
+   border. Light mode expresses the same "card lifted off the canvas" role
+   with a solid tonal fill and a real outline, since translucency reads
+   correctly only against the dark base it was designed for. */
 .frosted-surface {
+  background: var(--surface-container-highest);
+  border: 1px solid var(--outline-variant);
+}
+.dark .frosted-surface {
   background: rgb(255 255 255 / 0.06);
   border: 1px solid rgb(255 255 255 / 0.2);
 }

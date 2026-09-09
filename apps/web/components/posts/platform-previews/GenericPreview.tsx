@@ -6,7 +6,7 @@ import type { PlatformPreviewProps } from "./types";
  *  look to imitate. */
 export function GenericPreview({ pageName, imageBase64, caption, hashtags }: PlatformPreviewProps) {
   return (
-    <div className="overflow-hidden rounded-lg border border-white/15 bg-white/[0.02]">
+    <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-low dark:bg-white/[0.02]">
       <div className="flex items-center gap-2 p-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-container-highest text-[12px] font-bold text-on-surface">
           {pageName.slice(0, 1).toUpperCase()}

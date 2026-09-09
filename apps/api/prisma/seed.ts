@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaLibSql } from '@prisma/adapter-libsql';
+import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 
 // One-time bootstrap for the Platforms database — LinkedIn/Facebook/
@@ -40,7 +40,7 @@ const PLATFORMS = [
 ];
 
 async function main() {
-  const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL ?? 'file:./dev.db' });
+  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
   const prisma = new PrismaClient({ adapter });
 
   for (const platform of PLATFORMS) {

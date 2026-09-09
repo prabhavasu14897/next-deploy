@@ -9,10 +9,11 @@ import { PlatformsTable } from "./PlatformsTable";
 import { PlatformFormDialog } from "./PlatformFormDialog";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { PlusIcon } from "@/components/ui/icons";
+import { PlusIcon, SparklesIcon } from "@/components/ui/icons";
+import { PageLoading } from "@/components/ui/PageLoading";
 
 export function PlatformsView() {
-  const { state: platformsState, createPlatform, updatePlatform, deletePlatform } = usePlatforms();
+  const { state: platformsState, createPlatform, updatePlatform, deletePlatform, seedDemoPlatforms } = usePlatforms();
   const { state: orgState } = useOrganizations();
   const [formOpen, setFormOpen] = useState(false);
   const [editingPlatform, setEditingPlatform] = useState<Platform | null>(null);
@@ -42,7 +43,7 @@ export function PlatformsView() {
   const deleteBlocked = deleteTarget ? isPlatformInUse(deleteTarget.id, orgState.connections) : false;
 
   if (!platformsState.hydrated || !orgState.hydrated) {
-    return <div className="min-h-full bg-background" />;
+    return <PageLoading />;
   }
 
   return (
@@ -55,11 +56,21 @@ export function PlatformsView() {
               Manage the catalog of social platforms organizations can connect to.
             </p>
           </div>
-          <Button variant="primary" size="md" onClick={openCreate} className="shrink-0">
-            <PlusIcon className="h-4 w-4" />
-            Add Platform
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button variant="secondary" size="md" onClick={seedDemoPlatforms}>
+              <SparklesIcon className="h-4 w-4" />
+              Load sample data
+            </Button>
+            <Button variant="primary" size="md" onClick={openCreate}>
+              <PlusIcon className="h-4 w-4" />
+              Add Platform
+            </Button>
+          </div>
         </div>
+        <p className="mt-3 text-[12px] text-on-surface-variant">
+          Demo mode: sample platforms load instantly for preview and aren&apos;t saved to the server — a page reload
+          clears them.
+        </p>
       </header>
 
       <main className="px-4 pb-24 sm:px-16">

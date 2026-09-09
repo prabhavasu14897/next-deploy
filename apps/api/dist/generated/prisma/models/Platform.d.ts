@@ -547,11 +547,13 @@ export type PlatformCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
 };
 export type PlatformCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     data: Prisma.PlatformCreateManyInput | Prisma.PlatformCreateManyInput[];
+    skipDuplicates?: boolean;
 };
 export type PlatformCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.PlatformSelectCreateManyAndReturn<ExtArgs> | null;
     omit?: Prisma.PlatformOmit<ExtArgs> | null;
     data: Prisma.PlatformCreateManyInput | Prisma.PlatformCreateManyInput[];
+    skipDuplicates?: boolean;
 };
 export type PlatformUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.PlatformSelect<ExtArgs> | null;

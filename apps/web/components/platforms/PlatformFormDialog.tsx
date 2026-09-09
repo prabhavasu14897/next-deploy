@@ -3,13 +3,14 @@
 import { useState } from "react";
 import type { Platform, PlatformDraft, PlatformIntegrationConfig } from "@/lib/organizations/types";
 import { makeId } from "@/lib/organizations/id";
+import { DEMO_PLATFORMS } from "@/lib/demo-data";
 import { Dialog } from "@/components/ui/Dialog";
 import { DialogActions } from "@/components/ui/DialogActions";
 import { Button, IconButton } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { PlusIcon, TrashIcon } from "@/components/ui/icons";
+import { PlusIcon, TrashIcon, SparklesIcon } from "@/components/ui/icons";
 
 interface FieldRow {
   id: string;
@@ -102,6 +103,27 @@ export function PlatformFormDialog({
     setFields((f) => f.filter((row) => row.id !== id));
   }
 
+  // Demo-only: fills the whole form with one sample platform's data.
+  function fillTestData() {
+    const sample = DEMO_PLATFORMS[Math.floor(Math.random() * DEMO_PLATFORMS.length)];
+    setCatalog({
+      name: sample.name,
+      summary: sample.summary,
+      accountNoun: sample.accountNoun,
+      accountNounPlural: sample.accountNounPlural,
+      apiBaseUrl: sample.apiBaseUrl,
+    });
+    setFields(
+      sample.credentialFields.map((f) => ({
+        id: makeId("field"),
+        label: f.label,
+        secret: f.secret,
+        value: f.secret ? "" : "sample-value",
+        hasExistingValue: false,
+      }))
+    );
+  }
+
   const valid =
     catalog.name.trim().length > 0 &&
     catalog.summary.trim().length > 0 &&
@@ -131,9 +153,17 @@ export function PlatformFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} titleId="platform-form-title" width="34rem">
-      <h2 id="platform-form-title" className="pr-6 text-[16px] font-bold text-on-surface">
-        {editing ? `Edit ${editing.platform.name}` : "Add platform"}
-      </h2>
+      <div className="flex items-start justify-between gap-3 pr-6">
+        <h2 id="platform-form-title" className="text-[16px] font-bold text-on-surface">
+          {editing ? `Edit ${editing.platform.name}` : "Add platform"}
+        </h2>
+        {!editing && (
+          <Button type="button" variant="secondary" size="sm" onClick={fillTestData} className="shrink-0">
+            <SparklesIcon className="h-4 w-4" />
+            Fill test data
+          </Button>
+        )}
+      </div>
 
       <form onSubmit={submit} className="mt-4">
         <div className="max-h-[65vh] space-y-5 overflow-y-auto pr-1">
@@ -182,7 +212,7 @@ export function PlatformFormDialog({
             />
           </div>
 
-          <div className="border-t border-white/10 pt-4">
+          <div className="border-t border-outline-variant dark:border-white/10 pt-4">
             <p className="text-[12px] font-medium text-on-surface-variant">Credential fields</p>
             <p className="mt-0.5 text-[12px] text-on-surface-variant">
               What this platform needs to connect — defined here, not assumed by this app.
@@ -192,7 +222,7 @@ export function PlatformFormDialog({
               {fields.map((field) => (
                 <div
                   key={field.id}
-                  className="flex items-end gap-2 rounded border border-white/15 bg-white/[0.04] p-2.5"
+                  className="flex items-end gap-2 rounded border border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] p-2.5"
                 >
                   <div className="min-w-0 flex-1">
                     <label

@@ -6,7 +6,7 @@ import { usePlatforms } from "@/lib/platforms/store";
 import { useTemplates } from "@/lib/templates/store";
 import { iconFor } from "@/lib/templates/icon-registry";
 import { isPublishSupported } from "@/lib/posts/publish-support";
-import { SelectField } from "@/components/ui/SelectField";
+import { SelectField } from "@ascentware/react-ui-library";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { PlatformBadge } from "@/components/organizations/PlatformBadge";
 
@@ -51,16 +51,10 @@ export function StepTypeAndPlatform({
     <div className="space-y-8">
       <SelectField
         label="Organization"
-        id="wizard-org"
         value={organizationId}
-        onChange={(e) => onOrganizationChange(e.target.value)}
-      >
-        {organizations.map((org) => (
-          <option key={org.id} value={org.id}>
-            {org.name}
-          </option>
-        ))}
-      </SelectField>
+        onValueChange={onOrganizationChange}
+        options={organizations.map((org) => ({ value: org.id, label: org.name }))}
+      />
 
       <div className="space-y-3">
         <h2 className="text-[18px] font-semibold text-on-surface">Select post type</h2>
@@ -74,7 +68,7 @@ export function StepTypeAndPlatform({
                 aria-pressed={active}
                 onClick={() => onContentTypeChange(type.id)}
                 className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
-                  active ? "border-primary bg-primary/10" : "border-white/15 bg-white/[0.02] hover:bg-white/[0.06]"
+                  active ? "border-primary bg-primary/10" : "border-outline-variant dark:border-white/15 bg-surface-container-low dark:bg-white/[0.02] hover:bg-surface-container-highest dark:hover:bg-white/[0.06]"
                 }`}
               >
                 <Icon className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-on-surface-variant"}`} />
@@ -92,7 +86,7 @@ export function StepTypeAndPlatform({
 
       <div className="space-y-3">
         <h2 className="text-[18px] font-semibold text-on-surface">Select platforms</h2>
-        <div className="overflow-hidden rounded-lg border border-white/15">
+        <div className="overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
           {platformsState.platforms.map((platform) => {
             const supported = isPublishSupported(platform);
             const target = targets.find((t) => t.platformId === platform.id);
@@ -100,10 +94,10 @@ export function StepTypeAndPlatform({
             const accounts = connection ? accountsFor(connection.id).filter((a) => a.selected) : [];
 
             return (
-              <div key={platform.id} className="border-b border-white/[0.06] last:border-b-0">
+              <div key={platform.id} className="border-b border-outline-variant dark:border-white/[0.06] last:border-b-0">
                 <label
                   className={`flex items-center gap-3 px-3 py-2.5 ${
-                    supported ? "cursor-pointer hover:bg-white/[0.04]" : "opacity-50"
+                    supported ? "cursor-pointer hover:bg-surface-container-highest dark:hover:bg-white/[0.04]" : "opacity-50"
                   }`}
                 >
                   <Checkbox

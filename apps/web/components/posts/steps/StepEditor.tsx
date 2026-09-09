@@ -8,7 +8,7 @@ import type { ContentTone, Post, RewriteAction } from "@/lib/posts/types";
 import { RichTextToolbar } from "@/components/posts/RichTextToolbar";
 import { HashtagChips } from "@/components/posts/HashtagChips";
 import { OptimizationScoreGauge } from "@/components/posts/OptimizationScoreGauge";
-import { SelectField } from "@/components/ui/SelectField";
+import { SelectField } from "@ascentware/react-ui-library";
 import { FormField } from "@/components/ui/FormField";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button, IconButton } from "@/components/ui/Button";
@@ -75,7 +75,7 @@ export function StepEditor({
       </div>
 
       {draft.status === "generating" && (
-        <div className="flex h-64 items-center justify-center rounded-lg border border-white/15 bg-surface-container-high">
+        <div className="flex h-64 items-center justify-center rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-high">
           <SpinnerIcon className="h-6 w-6 animate-spin text-on-surface-variant" />
         </div>
       )}
@@ -123,16 +123,10 @@ export function StepEditor({
 
             <SelectField
               label="Content tone"
-              id={`editor-tone-${draft.platformId}`}
               value={draft.tone}
-              onChange={(e) => updateDraftText(post.id, draft.platformId, { tone: e.target.value as ContentTone })}
-            >
-              {TONES.map((tone) => (
-                <option key={tone.value} value={tone.value}>
-                  {tone.label}
-                </option>
-              ))}
-            </SelectField>
+              onValueChange={(v) => updateDraftText(post.id, draft.platformId, { tone: v as ContentTone })}
+              options={TONES}
+            />
 
             <div>
               <p className="mb-1.5 text-[12px] font-medium text-on-surface-variant">AI writing tools</p>
@@ -159,7 +153,7 @@ export function StepEditor({
             <img
               src={`data:image/png;base64,${draft.imageBase64}`}
               alt=""
-              className="aspect-square w-full rounded-lg border border-white/15 object-cover"
+              className="aspect-square w-full rounded-lg border border-outline-variant dark:border-white/15 object-cover"
             />
             <p className="text-[12px] text-on-surface-variant">AI-generated via OpenAI — review before posting.</p>
 

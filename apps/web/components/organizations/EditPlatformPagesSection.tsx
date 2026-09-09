@@ -63,7 +63,7 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
     <div>
       <h3 className="text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">Pages / Accounts</h3>
 
-      <div className="mt-2 flex flex-wrap gap-1 border-b border-white/10">
+      <div className="mt-2 flex flex-wrap gap-1 border-b border-outline-variant dark:border-white/10">
         {platforms.map((platform) => {
           const tabActive = platform.id === activeTab;
           return (
@@ -95,11 +95,11 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
         </Button>
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-lg border border-white/15">
+      <div className="mt-3 overflow-hidden rounded-lg border border-outline-variant dark:border-white/15">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[440px] border-collapse text-left">
             <thead>
-              <tr className="border-b border-white/10 bg-white/[0.03]">
+              <tr className="border-b border-outline-variant dark:border-white/10 bg-surface-container-low dark:bg-white/[0.03]">
                 <th className="px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant">
                   Name
                 </th>
@@ -123,7 +123,7 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
                 </tr>
               ) : (
                 pages.map((page) => (
-                  <tr key={page.id} className="border-b border-white/[0.06] last:border-b-0">
+                  <tr key={page.id} className="border-b border-outline-variant dark:border-white/[0.06] last:border-b-0">
                     <td className="px-3 py-2 text-[14px] font-semibold text-on-surface">{page.name}</td>
                     <td className="px-3 py-2 text-[12px] text-on-surface-variant">{page.type}</td>
                     <td className="px-3 py-2 text-[12px] text-on-surface-variant tabular">

@@ -11,6 +11,18 @@ export function aggregateStatus(
   return "not_connected";
 }
 
+/** The create form only collects name/description/industry — code has no
+ *  input of its own, but OrgDetailSheet displays it as a subtitle, so it's
+ *  derived from the name rather than left blank. */
+export function deriveOrgCode(name: string): string {
+  const slug = name
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "")
+    .slice(0, 8);
+  return slug || "ORG";
+}
+
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
     year: "numeric",

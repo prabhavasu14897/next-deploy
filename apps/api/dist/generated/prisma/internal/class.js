@@ -3,8 +3,8 @@ const config = {
     "previewFeatures": [],
     "clientVersion": "7.10.0",
     "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
-    "activeProvider": "sqlite",
-    "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Platform {\n  id                String            @id @default(cuid())\n  name              String\n  summary           String\n  accountNoun       String\n  accountNounPlural String\n  apiBaseUrl        String\n  credentialFields  CredentialField[]\n  createdAt         DateTime          @default(now())\n  updatedAt         DateTime          @updatedAt\n}\n\nmodel CredentialField {\n  id         String   @id @default(cuid())\n  platformId String\n  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)\n  key        String\n  label      String\n  secret     Boolean  @default(false)\n  // Ciphertext (\"iv:authTag:data\", hex) when secret; plaintext otherwise.\n  value      String\n  position   Int      @default(0)\n\n  @@unique([platformId, key])\n}\n",
+    "activeProvider": "postgresql",
+    "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Platform {\n  id                String            @id @default(cuid())\n  name              String\n  summary           String\n  accountNoun       String\n  accountNounPlural String\n  apiBaseUrl        String\n  credentialFields  CredentialField[]\n  createdAt         DateTime          @default(now())\n  updatedAt         DateTime          @updatedAt\n}\n\nmodel CredentialField {\n  id         String   @id @default(cuid())\n  platformId String\n  platform   Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)\n  key        String\n  label      String\n  secret     Boolean  @default(false)\n  // Ciphertext (\"iv:authTag:data\", hex) when secret; plaintext otherwise.\n  value      String\n  position   Int      @default(0)\n\n  @@unique([platformId, key])\n}\n",
     "runtimeDataModel": {
         "models": {},
         "enums": {},
@@ -26,9 +26,9 @@ async function decodeBase64AsWasm(wasmBase64) {
     return new WebAssembly.Module(wasmArray);
 }
 config.compilerWasm = {
-    getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.mjs"),
+    getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
     getQueryCompilerWasmModule: async () => {
-        const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.wasm-base64.mjs");
+        const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs");
         return await decodeBase64AsWasm(wasm);
     },
     importName: "./query_compiler_fast_bg.js"
