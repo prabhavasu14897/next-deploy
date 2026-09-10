@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { SearchIcon, TrashIcon } from "@/components/ui/icons";
+import { SearchIcon, SendIcon, TrashIcon } from "@/components/ui/icons";
 
 const HEADERS = ["Content", "Platform", "Link", "Created", "Actions"] as const;
 const PAGE_SIZE = 10;
@@ -58,7 +58,7 @@ function postMatchesStatusFilter(post: Post, filter: string): boolean {
 
 export function PostHistoryTable({ posts }: { posts: Post[] }) {
   const { platformById, state: platformsState } = usePlatforms();
-  const { deletePost } = usePosts();
+  const { deletePost, submitPost } = usePosts();
   const { templateById } = useTemplates();
   const [deleteTarget, setDeleteTarget] = useState<Post | null>(null);
   const [query, setQuery] = useState("");
@@ -245,7 +245,12 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                         <p className="text-[12px] text-on-surface-variant">{formatDate(post.createdAt)}</p>
                       </td>
                       <td className="px-2 py-3 sm:px-4">
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-1">
+                          {post.drafts.some((d) => d.status === "draft") && (
+                            <IconButton label={`Post ${type?.label ?? "post"} now`} onClick={() => submitPost(post.id)}>
+                              <SendIcon className="h-4 w-4" />
+                            </IconButton>
+                          )}
                           <IconButton label={`Delete ${type?.label ?? "post"}`} onClick={() => setDeleteTarget(post)}>
                             <TrashIcon className="h-4 w-4" />
                           </IconButton>

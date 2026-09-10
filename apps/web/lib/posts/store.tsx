@@ -425,7 +425,10 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       const post = state.posts.find((p) => p.id === postId);
       if (!post) return;
       for (const draft of post.drafts) {
-        if (draft.status !== "ready" || !draft.imageBase64) continue;
+        // "ready" is a freshly-generated draft mid-wizard; "draft" is one
+        // saved for later via saveAsDraft — both already have real
+        // image+caption and are equally postable from here or from history.
+        if ((draft.status !== "ready" && draft.status !== "draft") || !draft.imageBase64) continue;
         publishDraft(postId, draft.platformId, draft.imageBase64, draft.caption);
       }
     },
