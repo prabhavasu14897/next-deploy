@@ -10,7 +10,8 @@ import { Button, IconButton } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { FileUploadField } from "@ascentware/react-ui-library";
+import { FormField } from "@/components/ui/FormField";
+import { LogoUpload } from "@/components/ui/LogoUpload";
 import { PlusIcon, TrashIcon, SparklesIcon } from "@/components/ui/icons";
 
 interface FieldRow {
@@ -32,24 +33,6 @@ const EMPTY_CATALOG = {
   apiBaseUrl: "",
   logoDataUrl: null as string | null,
 };
-
-/** Reads a chosen image into a data: URL for FileUploadField — this mock
- *  app has no upload backend, so the data: URL *is* the stored value. A
- *  "#/name.png" fragment is appended: harmless to the browser (fragments
- *  are stripped before an <img> decodes the URL — verified), but it gives
- *  the library's own image-vs-file preview detection (which regex-matches
- *  a file extension in the string) and its "/"-split display name
- *  something real to find, since a bare base64 payload has neither.
- */
-function fileToLogoDataUrl(files: File[]): Promise<string> {
-  const file = files[0];
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(`${String(reader.result)}#/${file.name}`);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
 
 function slugify(label: string): string {
   const slug = label
@@ -206,16 +189,13 @@ export function PlatformFormDialog({
               placeholder="e.g. TikTok"
               autoFocus
             />
-            <div className="col-span-2">
-              <FileUploadField
-                label="Logo"
-                accept="image/*"
-                value={catalog.logoDataUrl ?? ""}
-                onUpload={fileToLogoDataUrl}
-                onChange={(v) => updateCatalog("logoDataUrl", (Array.isArray(v) ? v[0] : v) || null)}
-                hint="PNG or JPG. No upload backend in this demo — stored as-is in the browser."
+            <FormField label="Logo" htmlFor="platform-logo-trigger">
+              <LogoUpload
+                id="platform-logo-trigger"
+                value={catalog.logoDataUrl}
+                onChange={(v) => updateCatalog("logoDataUrl", v)}
               />
-            </div>
+            </FormField>
             <TextField
               label="Summary"
               id="platform-summary"
