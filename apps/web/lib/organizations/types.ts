@@ -14,6 +14,12 @@ export interface Platform {
   /** Where Connect calls to validate credentials when no bespoke backend
    *  integration exists for this platform (see the generic connector). */
   apiBaseUrl: string;
+  /** Admin-uploaded icon — a data: URL, same inline-storage approach as an
+   *  organization's logo. Takes priority over PlatformBadge's built-in
+   *  name-matched brand marks (LinkedIn/Facebook/Instagram) when set.
+   *  Frontend-only for now: the backend catalog doesn't persist this field
+   *  yet, so it's dropped on a real API refetch — see PlatformBadge. */
+  logoDataUrl: string | null;
 }
 
 /** One credential field a platform needs to connect — defined by the admin

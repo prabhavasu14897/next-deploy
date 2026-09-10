@@ -68,8 +68,9 @@ export function PlatformsView() {
           </div>
         </div>
         <p className="mt-3 text-[12px] text-on-surface-variant">
-          Demo mode: sample platforms load instantly for preview and aren&apos;t saved to the server — a page reload
-          clears them.
+          Demo mode: sample platforms load instantly for preview and are kept in this browser only — they
+          aren&apos;t saved to the server, so they won&apos;t appear for anyone else or in a real deployment&apos;s
+          database.
         </p>
       </header>
 

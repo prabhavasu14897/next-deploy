@@ -107,16 +107,15 @@ export function OrganizationsTable({
                       </td>
                       <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="flex items-center gap-1.5">
-                          {platforms.map((platform) => {
-                            const connection = connections.find((c) => c.platformId === platform.id);
-                            return (
-                              <PlatformBadge
-                                key={platform.id}
-                                platform={platform}
-                                status={connection?.status ?? "not_connected"}
-                              />
-                            );
-                          })}
+                          {platforms
+                            .map((platform) => ({
+                              platform,
+                              connection: connections.find((c) => c.platformId === platform.id),
+                            }))
+                            .filter(({ connection }) => connection?.status === "connected")
+                            .map(({ platform, connection }) => (
+                              <PlatformBadge key={platform.id} platform={platform} status={connection!.status} />
+                            ))}
                         </div>
                         <p className="mt-1 text-[12px] text-on-surface-variant tabular">
                           {connectedCount} of {platforms.length} connected

@@ -458,7 +458,7 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
           {
             platformId,
             accountId: null,
-            imageBase64: null,
+            imageBase64: DEMO_IMAGE_BASE64,
             imageStyles: [],
             caption: sample.caption,
             hashtags: sample.hashtags,

@@ -6,7 +6,7 @@ import type { Organization } from "@/lib/organizations/types";
 import { useOrganizations } from "@/lib/organizations/store";
 import { usePlatforms } from "@/lib/platforms/store";
 import { formatDate } from "@/lib/organizations/derive";
-import { INDUSTRIES, TIMEZONES } from "@/lib/organizations/reference-data";
+import { INDUSTRIES } from "@/lib/organizations/reference-data";
 
 // Radix SelectItem can't take an empty-string value, so "no industry chosen"
 // (a real, explicitly re-selectable option here, unlike the other fields'
@@ -15,7 +15,7 @@ import { INDUSTRIES, TIMEZONES } from "@/lib/organizations/reference-data";
 const NO_INDUSTRY_VALUE = "__no_industry__";
 import { IconButton, Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
-import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { TextField } from "@/components/ui/TextField";
 import { TextareaField } from "@/components/ui/TextareaField";
@@ -227,41 +227,6 @@ function OrgDetailContent({
         </h3>
         <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2.5 border-b border-outline-variant dark:border-white/10 pb-4 text-[12px]">
           <div>
-            <dt className="text-on-surface-variant">Status</dt>
-            <dd className="mt-0.5">
-              <Badge tone={organization.status === "active" ? "success" : "neutral"}>
-                {organization.status === "active" ? "Active" : "Inactive"}
-              </Badge>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-on-surface-variant">Country</dt>
-            <dd className="mt-0.5 truncate text-on-surface">{organization.country || "—"}</dd>
-          </div>
-          <div>
-            <dt className="text-on-surface-variant">Timezone</dt>
-            <dd className="mt-0.5 truncate text-on-surface">
-              {TIMEZONES.find((t) => t.value === organization.timezone)?.label || organization.timezone || "—"}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-on-surface-variant">Website</dt>
-            <dd className="mt-0.5 truncate">
-              {organization.website ? (
-                <a
-                  href={organization.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  {organization.website}
-                </a>
-              ) : (
-                <span className="text-on-surface">—</span>
-              )}
-            </dd>
-          </div>
-          <div>
             <dt className="text-on-surface-variant">Industry</dt>
             <dd className="mt-0.5 truncate text-on-surface">{organization.industry || "—"}</dd>
           </div>
@@ -276,18 +241,25 @@ function OrgDetailContent({
         <h3 className="pt-4 text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">
           Platforms
         </h3>
-        <ul>
-          {platforms.map((platform) => (
-            <PlatformRow
-              key={platform.id}
-              organization={organization}
-              platform={platform}
-              connection={state.connections.find(
-                (c) => c.organizationId === organization.id && c.platformId === platform.id
-              )}
-            />
-          ))}
-        </ul>
+        {platforms.length === 0 ? (
+          <EmptyState
+            title="No platforms in the catalog yet"
+            description="There's nothing to connect until a platform exists. Go to Add Platform and create one, or use its Load sample data button."
+          />
+        ) : (
+          <ul>
+            {platforms.map((platform) => (
+              <PlatformRow
+                key={platform.id}
+                organization={organization}
+                platform={platform}
+                connection={state.connections.find(
+                  (c) => c.organizationId === organization.id && c.platformId === platform.id
+                )}
+              />
+            ))}
+          </ul>
+        )}
       </div>
 
       <ConfirmDialog

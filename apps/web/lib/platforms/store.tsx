@@ -7,6 +7,8 @@ import { DEMO_PLATFORMS } from "../demo-data";
 import * as api from "./api-client";
 import type { PlatformPayload, PlatformResponse } from "./api-client";
 
+const STORAGE_KEY = "ascentware.smp.platforms.v1";
+
 interface State {
   platforms: Platform[];
   integrations: Record<string, PlatformIntegrationConfig>;
@@ -16,9 +18,15 @@ interface State {
 type Action =
   | { type: "set"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> }
   // Demo-only: appends locally-built entries without going through the API,
-  // since the catalog is otherwise entirely server-backed. Never persisted —
-  // a refetch (e.g. a page reload) replaces state with the real API result.
-  | { type: "seed_local"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> };
+  // since the catalog is otherwise entirely server-backed. Persisted to
+  // localStorage (see the provider's effects below) so it survives a
+  // reload — a later successful refetch from the real API still wins and
+  // replaces it via "set".
+  | { type: "seed_local"; platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> }
+  | {
+      type: "hydrate_local";
+      state: { platforms: Platform[]; integrations: Record<string, PlatformIntegrationConfig> } | null;
+    };
 
 const initialState: State = {
   platforms: [],
@@ -36,6 +44,10 @@ function reducer(state: State, action: Action): State {
         integrations: { ...state.integrations, ...action.integrations },
         hydrated: true,
       };
+    case "hydrate_local":
+      return action.state
+        ? { platforms: action.state.platforms, integrations: action.state.integrations, hydrated: true }
+        : { platforms: [], integrations: {}, hydrated: true };
     default:
       return state;
   }
@@ -59,6 +71,8 @@ function toPlatformAndIntegration(response: PlatformResponse): {
     accountNoun: response.accountNoun,
     accountNounPlural: response.accountNounPlural,
     apiBaseUrl: response.apiBaseUrl,
+    // The backend catalog doesn't persist an uploaded logo yet.
+    logoDataUrl: null,
   };
 
   const credentialFields: CredentialField[] = response.credentialFields.map((f) => ({
@@ -118,6 +132,31 @@ const PlatformsContext = createContext<PlatformsContextValue | null>(null);
 export function PlatformsProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Hydrate any locally-seeded demo platforms from localStorage first, so
+  // there's something to show (and so seeded platforms survive a reload)
+  // before the real API attempt below resolves — that attempt still wins
+  // and replaces this via "set" once it succeeds.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      dispatch({ type: "hydrate_local", state: raw ? JSON.parse(raw) : null });
+    } catch {
+      dispatch({ type: "hydrate_local", state: null });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!state.hydrated) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ platforms: state.platforms, integrations: state.integrations })
+      );
+    } catch {
+      // storage unavailable (private mode, quota) — state still works in-memory
+    }
+  }, [state]);
+
   const refetch = useCallback(async () => {
     try {
       const responses = await api.listPlatforms();
@@ -130,9 +169,8 @@ export function PlatformsProvider({ children }: { children: React.ReactNode }) {
       }
       dispatch({ type: "set", platforms, integrations });
     } catch {
-      // API unreachable — hydrate empty rather than hang forever; surfaces
-      // as the same honest empty state every other zero-data view shows.
-      dispatch({ type: "set", platforms: [], integrations: {} });
+      // API unreachable — keep whatever was hydrated from localStorage
+      // (real data or a seeded demo catalog) instead of wiping it out.
     }
   }, []);
 
@@ -177,7 +215,9 @@ export function PlatformsProvider({ children }: { children: React.ReactNode }) {
 
   // Demo/offline seed: the real create/update/delete actions all require
   // the backend API, so this bypasses it entirely for a "show it populated"
-  // demo — local only, wiped by the next successful refetch (e.g. a reload).
+  // demo. Persisted to localStorage (see the hydrate/persist effects above)
+  // so it survives a reload — a later successful refetch from the real API
+  // still wins and replaces it.
   const seedDemoPlatforms = useCallback(() => {
     const platforms: Platform[] = [];
     const integrations: Record<string, PlatformIntegrationConfig> = {};
@@ -190,6 +230,7 @@ export function PlatformsProvider({ children }: { children: React.ReactNode }) {
         accountNoun: sample.accountNoun,
         accountNounPlural: sample.accountNounPlural,
         apiBaseUrl: sample.apiBaseUrl,
+        logoDataUrl: null,
       });
       const credentialFields: CredentialField[] = sample.credentialFields.map((f) => ({
         key: f.key,

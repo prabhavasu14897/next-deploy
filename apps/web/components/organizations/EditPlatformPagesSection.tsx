@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Dialog } from "@/components/ui/Dialog";
 import { DialogActions } from "@/components/ui/DialogActions";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PlusIcon } from "@/components/ui/icons";
 
 const EMPTY_PAGE_FORM = { name: "", type: "", followers: "" };
@@ -28,19 +29,32 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
   const [addOpen, setAddOpen] = useState(false);
   const [pageForm, setPageForm] = useState(EMPTY_PAGE_FORM);
 
+  // Only platforms this org is actually connected to make sense to manage
+  // pages for — an uncconnected platform in the catalog has no pages to show.
+  const connectedPlatforms = platforms.filter(
+    (p) => connectionFor(organization.id, p.id)?.status === "connected"
+  );
+
   // Falls back to the first available platform whenever the stored tab is
   // unset or no longer exists (e.g. platforms hasn't hydrated from
   // localStorage yet on first render) rather than relying on a one-time
   // useState initializer, since platforms now loads asynchronously.
   const activeTab =
-    activePlatformTab && platforms.some((p) => p.id === activePlatformTab)
+    activePlatformTab && connectedPlatforms.some((p) => p.id === activePlatformTab)
       ? activePlatformTab
-      : (platforms[0]?.id ?? null);
-  const activePlatform = platforms.find((p) => p.id === activeTab) ?? null;
+      : (connectedPlatforms[0]?.id ?? null);
+  const activePlatform = connectedPlatforms.find((p) => p.id === activeTab) ?? null;
   const connection = activePlatform ? connectionFor(organization.id, activePlatform.id) : undefined;
   const pages = connection ? accountsFor(connection.id) : [];
 
-  if (!activePlatform) return null;
+  if (!activePlatform) {
+    return (
+      <EmptyState
+        title="No connected platforms yet"
+        description="Connect a platform to this organization first — from the close-edit view's Platforms section — before adding its pages or accounts here."
+      />
+    );
+  }
 
   function openAddPage() {
     setPageForm(EMPTY_PAGE_FORM);
@@ -64,7 +78,7 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
       <h3 className="text-[12px] font-medium uppercase tracking-wide text-on-surface-variant">Pages / Accounts</h3>
 
       <div className="mt-2 flex flex-wrap gap-1 border-b border-outline-variant dark:border-white/10">
-        {platforms.map((platform) => {
+        {connectedPlatforms.map((platform) => {
           const tabActive = platform.id === activeTab;
           return (
             <button
@@ -77,7 +91,7 @@ export function EditPlatformPagesSection({ organization }: { organization: Organ
                   : "border-transparent text-on-surface-variant hover:text-on-surface"
               }`}
             >
-              <PlatformBadge platform={platform} status="not_connected" size="sm" />
+              <PlatformBadge platform={platform} status="connected" size="sm" />
               {platform.name}
             </button>
           );

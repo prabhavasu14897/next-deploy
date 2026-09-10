@@ -10,6 +10,7 @@ import { Button, IconButton } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { FileUploadField } from "@ascentware/react-ui-library";
 import { PlusIcon, TrashIcon, SparklesIcon } from "@/components/ui/icons";
 
 interface FieldRow {
@@ -23,7 +24,32 @@ interface FieldRow {
   hasExistingValue: boolean;
 }
 
-const EMPTY_CATALOG = { name: "", summary: "", accountNoun: "", accountNounPlural: "", apiBaseUrl: "" };
+const EMPTY_CATALOG = {
+  name: "",
+  summary: "",
+  accountNoun: "",
+  accountNounPlural: "",
+  apiBaseUrl: "",
+  logoDataUrl: null as string | null,
+};
+
+/** Reads a chosen image into a data: URL for FileUploadField — this mock
+ *  app has no upload backend, so the data: URL *is* the stored value. A
+ *  "#/name.png" fragment is appended: harmless to the browser (fragments
+ *  are stripped before an <img> decodes the URL — verified), but it gives
+ *  the library's own image-vs-file preview detection (which regex-matches
+ *  a file extension in the string) and its "/"-split display name
+ *  something real to find, since a bare base64 payload has neither.
+ */
+function fileToLogoDataUrl(files: File[]): Promise<string> {
+  const file = files[0];
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(`${String(reader.result)}#/${file.name}`);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 function slugify(label: string): string {
   const slug = label
@@ -66,6 +92,7 @@ export function PlatformFormDialog({
         accountNoun: editing.platform.accountNoun,
         accountNounPlural: editing.platform.accountNounPlural,
         apiBaseUrl: editing.platform.apiBaseUrl,
+        logoDataUrl: editing.platform.logoDataUrl,
       });
       setFields(
         editing.integration.credentialFields.map((f) => {
@@ -87,7 +114,7 @@ export function PlatformFormDialog({
     }
   }
 
-  function updateCatalog<K extends keyof typeof EMPTY_CATALOG>(key: K, value: string) {
+  function updateCatalog<K extends keyof typeof EMPTY_CATALOG>(key: K, value: (typeof EMPTY_CATALOG)[K]) {
     setCatalog((c) => ({ ...c, [key]: value }));
   }
 
@@ -112,6 +139,9 @@ export function PlatformFormDialog({
       accountNoun: sample.accountNoun,
       accountNounPlural: sample.accountNounPlural,
       apiBaseUrl: sample.apiBaseUrl,
+      // No upload here — PlatformBadge's name-matched brand mark covers
+      // these sample platforms (LinkedIn/Instagram/Facebook/X) already.
+      logoDataUrl: null,
     });
     setFields(
       sample.credentialFields.map((f) => ({
@@ -146,6 +176,7 @@ export function PlatformFormDialog({
       accountNoun: catalog.accountNoun.trim(),
       accountNounPlural: catalog.accountNounPlural.trim(),
       apiBaseUrl: catalog.apiBaseUrl.trim(),
+      logoDataUrl: catalog.logoDataUrl,
       credentialFields,
       credentials,
     });
@@ -153,17 +184,15 @@ export function PlatformFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} titleId="platform-form-title" width="34rem">
-      <div className="flex items-start justify-between gap-3 pr-6">
-        <h2 id="platform-form-title" className="text-[16px] font-bold text-on-surface">
-          {editing ? `Edit ${editing.platform.name}` : "Add platform"}
-        </h2>
-        {!editing && (
-          <Button type="button" variant="secondary" size="sm" onClick={fillTestData} className="shrink-0">
-            <SparklesIcon className="h-4 w-4" />
-            Fill test data
-          </Button>
-        )}
-      </div>
+      <h2 id="platform-form-title" className="pr-8 text-[16px] font-bold text-on-surface">
+        {editing ? `Edit ${editing.platform.name}` : "Add platform"}
+      </h2>
+      {!editing && (
+        <Button type="button" variant="secondary" size="sm" onClick={fillTestData} className="mt-2">
+          <SparklesIcon className="h-4 w-4" />
+          Fill test data
+        </Button>
+      )}
 
       <form onSubmit={submit} className="mt-4">
         <div className="max-h-[65vh] space-y-5 overflow-y-auto pr-1">
@@ -177,6 +206,16 @@ export function PlatformFormDialog({
               placeholder="e.g. TikTok"
               autoFocus
             />
+            <div className="col-span-2">
+              <FileUploadField
+                label="Logo"
+                accept="image/*"
+                value={catalog.logoDataUrl ?? ""}
+                onUpload={fileToLogoDataUrl}
+                onChange={(v) => updateCatalog("logoDataUrl", (Array.isArray(v) ? v[0] : v) || null)}
+                hint="PNG or JPG. No upload backend in this demo — stored as-is in the browser."
+              />
+            </div>
             <TextField
               label="Summary"
               id="platform-summary"

@@ -30,19 +30,28 @@ export function DashboardView() {
             label="Organizations"
             count={hydrated ? orgState.organizations.length : null}
             href="/organizations"
+            tone="primary"
           />
           <StatTile
             Icon={PlugIcon}
             label="Platforms"
             count={hydrated ? platformsState.platforms.length : null}
             href="/add-platform"
+            tone="blue"
           />
-          <StatTile Icon={ListIcon} label="Pages" count={hydrated ? pagesCount : null} href="/organizations" />
+          <StatTile
+            Icon={ListIcon}
+            label="Pages"
+            count={hydrated ? pagesCount : null}
+            href="/organizations"
+            tone="green"
+          />
           <StatTile
             Icon={SparklesIcon}
             label="Posts"
             count={hydrated ? postsState.posts.length : null}
             href="/post"
+            tone="red"
           />
         </div>
       </main>

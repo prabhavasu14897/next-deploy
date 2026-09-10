@@ -1,11 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import type { Post, TabStatus } from "@/lib/posts/types";
 import { usePosts } from "@/lib/posts/store";
 import { usePlatforms } from "@/lib/platforms/store";
 import { useTemplates } from "@/lib/templates/store";
 import { formatDate } from "@/lib/organizations/derive";
+import { DEMO_IMAGE_BASE64 } from "@/lib/demo-data";
+import { platformIconSrc } from "@/components/organizations/PlatformBadge";
 import { Badge } from "@/components/ui/Badge";
 import { IconButton } from "@/components/ui/Button";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +18,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SearchIcon, TrashIcon } from "@/components/ui/icons";
 
-const HEADERS = ["Content", "Platforms", "Created", "Actions"] as const;
+const HEADERS = ["Content", "Platform", "Link", "Created", "Actions"] as const;
 const PAGE_SIZE = 10;
 
 const TONE_BY_STATUS: Record<TabStatus, "neutral" | "success" | "error" | "warning"> = {
@@ -141,7 +144,7 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                     scope="col"
                     className={`px-2 py-2.5 text-[12px] font-semibold uppercase tracking-[0.05em] text-on-surface-variant sm:px-4 ${
                       header === "Actions" ? "text-right" : ""
-                    } ${header === "Created" ? "hidden sm:table-cell" : ""}`}
+                    } ${header === "Created" || header === "Link" ? "hidden sm:table-cell" : ""}`}
                   >
                     {header}
                   </th>
@@ -177,6 +180,65 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                               {platformById(draft.platformId)?.name ?? draft.platformId} · {STATUS_LABELS[draft.status]}
                             </Badge>
                           ))}
+                        </div>
+                      </td>
+                      <td className="hidden px-4 py-3 sm:table-cell">
+                        <div className="flex flex-wrap gap-1.5">
+                          {post.drafts.map((draft) => {
+                            const platform = platformById(draft.platformId);
+                            const platformName = platform?.name ?? draft.platformId;
+                            // Demo/seeded posts carry a placeholder image rather than
+                            // a real generated one — show that platform's brand mark
+                            // (its own uploaded logo first, else the built-in brand
+                            // mark) instead of the meaningless placeholder thumbnail.
+                            const isPlaceholder = draft.imageBase64 === DEMO_IMAGE_BASE64;
+                            const logoSrc = isPlaceholder
+                              ? platformIconSrc(platform ?? { name: platformName, logoDataUrl: null })
+                              : undefined;
+
+                            if (logoSrc) {
+                              return (
+                                <span
+                                  key={draft.platformId}
+                                  title={`Sample post for ${platformName} — no real image generated`}
+                                  className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded border border-outline-variant dark:border-white/15"
+                                >
+                                  {platform?.logoDataUrl ? (
+                                    // eslint-disable-next-line @next/next/no-img-element -- data: URL upload, next/image can't optimize these.
+                                    <img src={logoSrc} alt={platformName} className="h-full w-full object-cover" />
+                                  ) : (
+                                    <Image src={logoSrc} alt={platformName} width={32} height={32} className="h-full w-full object-cover" />
+                                  )}
+                                </span>
+                              );
+                            }
+
+                            if (draft.imageBase64) {
+                              return (
+                                <a
+                                  key={draft.platformId}
+                                  href={`data:image/png;base64,${draft.imageBase64}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  title={`Open the image posted to ${platformName}`}
+                                  className="block h-8 w-8 shrink-0 overflow-hidden rounded border border-outline-variant dark:border-white/15 transition-opacity hover:opacity-80"
+                                >
+                                  {/* eslint-disable-next-line @next/next/no-img-element -- data: URL thumbnail, next/image can't optimize these. */}
+                                  <img
+                                    src={`data:image/png;base64,${draft.imageBase64}`}
+                                    alt=""
+                                    className="h-full w-full object-cover"
+                                  />
+                                </a>
+                              );
+                            }
+
+                            return (
+                              <span key={draft.platformId} className="text-[12px] text-on-surface-variant">
+                                —
+                              </span>
+                            );
+                          })}
                         </div>
                       </td>
                       <td className="hidden px-4 py-3 sm:table-cell">
