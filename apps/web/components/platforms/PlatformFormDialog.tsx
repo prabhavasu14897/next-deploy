@@ -12,7 +12,9 @@ import { Input } from "@/components/ui/Input";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { FormField } from "@/components/ui/FormField";
 import { LogoUpload } from "@/components/ui/LogoUpload";
-import { PlusIcon, TrashIcon, SparklesIcon } from "@/components/ui/icons";
+import { PlusIcon, TrashIcon, SparklesIcon, LinkIcon } from "@/components/ui/icons";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
 interface FieldRow {
   id: string;
@@ -236,6 +238,28 @@ export function PlatformFormDialog({
             <p className="mt-0.5 text-[12px] text-on-surface-variant">
               What this platform needs to connect — defined here, not assumed by this app.
             </p>
+
+            {editing && editing.platform.name.trim().toLowerCase() === "linkedin" && (
+              <div className="mt-3 rounded border border-outline-variant dark:border-white/15 bg-surface-container-highest dark:bg-white/[0.04] p-2.5">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- real top-level navigation to the API server's origin for LinkedIn's OAuth consent screen, not an internal route; useRouter().push() can't leave the SPA.
+                    window.location.href = `${API_URL}/platforms/${editing.platform.id}/oauth/linkedin/start`;
+                  }}
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  Connect with LinkedIn
+                </Button>
+                <p className="mt-1.5 text-[12px] text-on-surface-variant">
+                  Opens LinkedIn&apos;s login to get an Access Token and Organization URN automatically — save Client
+                  ID and Client Secret below first, since this uses whatever is already saved, not what&apos;s
+                  currently typed in.
+                </p>
+              </div>
+            )}
 
             <div className="mt-3 space-y-2">
               {fields.map((field) => (

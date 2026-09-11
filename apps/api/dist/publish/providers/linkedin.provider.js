@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Injectable } from '@nestjs/common';
 import { ProviderError, ProviderNotConfiguredException } from '../../common/provider-exceptions.js';
-const LINKEDIN_VERSION = '202401';
+const LINKEDIN_VERSION = '202608';
 let LinkedInProvider = class LinkedInProvider {
     key = 'linkedin';
     async publish({ imageBase64, caption, credentials }) {

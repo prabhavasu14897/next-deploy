@@ -4,4 +4,6 @@ export declare class LinkedInConnector implements PlatformConnector {
     connect({ credentials }: DecryptedPlatform): Promise<{
         accounts: DiscoveredAccount[];
     }>;
+    private connectAsOrganization;
+    private connectAsPerson;
 }

@@ -8,9 +8,11 @@ import { LinkedInConnector } from './connectors/linkedin.connector.js';
 import { FacebookConnector } from './connectors/facebook.connector.js';
 import { GenericConnector } from './connectors/generic.connector.js';
 import { ConnectorService } from './connectors/connector.service.js';
+import { LinkedInOAuthController } from './oauth/linkedin-oauth.controller.js';
+import { LinkedInOAuthService } from './oauth/linkedin-oauth.service.js';
 
 @Module({
-  controllers: [PlatformsController],
+  controllers: [PlatformsController, LinkedInOAuthController],
   providers: [
     PrismaService,
     EncryptionService,
@@ -24,6 +26,7 @@ import { ConnectorService } from './connectors/connector.service.js';
     },
     ConnectorService,
     PlatformsService,
+    LinkedInOAuthService,
   ],
   exports: [PlatformsService, PrismaService, EncryptionService],
 })

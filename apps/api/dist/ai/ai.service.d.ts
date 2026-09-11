@@ -6,6 +6,7 @@ export declare class AiService {
     generateImage(prompt: string): Promise<{
         imageBase64: string;
     }>;
+    private generateImageFree;
     generateCaption(prompt: string, tone: string): Promise<{
         caption: string;
     }>;
@@ -15,4 +16,5 @@ export declare class AiService {
     rewriteContent(content: string, action: 'improve' | 'shorten' | 'grammar', tone: string): Promise<{
         content: string;
     }>;
+    private chat;
 }

@@ -11,6 +11,11 @@ import { DEMO_IMAGE_BASE64, DEMO_POST_CONTENT } from "../demo-data";
 
 const STORAGE_KEY = "ascentware.smp.posts.v2";
 
+/** Statuses submitPost will (re)publish — a draft in any of these already
+ *  has real image+caption content and just needs the publish call to
+ *  succeed (or succeed again, for "failed"). */
+const POSTABLE_STATUSES: TabStatus[] = ["ready", "draft", "failed"];
+
 interface State {
   posts: Post[];
   hydrated: boolean;
@@ -426,9 +431,11 @@ export function PostsProvider({ children }: { children: React.ReactNode }) {
       if (!post) return;
       for (const draft of post.drafts) {
         // "ready" is a freshly-generated draft mid-wizard; "draft" is one
-        // saved for later via saveAsDraft — both already have real
-        // image+caption and are equally postable from here or from history.
-        if ((draft.status !== "ready" && draft.status !== "draft") || !draft.imageBase64) continue;
+        // saved for later via saveAsDraft; "failed" is a previous publish
+        // attempt that didn't go through — all three already have real
+        // image+caption and are equally postable/retryable from here or
+        // from history.
+        if (!POSTABLE_STATUSES.includes(draft.status) || !draft.imageBase64) continue;
         publishDraft(postId, draft.platformId, draft.imageBase64, draft.caption);
       }
     },

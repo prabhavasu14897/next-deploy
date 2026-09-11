@@ -50,6 +50,17 @@ const STATUS_FILTERS: { value: string; label: string }[] = [
   { value: "in_progress", label: "In progress" },
 ];
 
+/** A real, clickable URL to the live post — only known for platforms whose
+ *  permalink format is confirmed. `externalPostId` is the URN LinkedIn's
+ *  Posts API returns (e.g. "urn:li:share:123..."), which its own feed
+ *  route accepts directly. */
+function externalPostUrl(platformName: string, externalPostId: string): string | undefined {
+  if (platformName.trim().toLowerCase() === "linkedin") {
+    return `https://www.linkedin.com/feed/update/${externalPostId}/`;
+  }
+  return undefined;
+}
+
 function postMatchesStatusFilter(post: Post, filter: string): boolean {
   if (filter === "all") return true;
   if (filter === "in_progress") return post.drafts.some((d) => d.status === "generating" || d.status === "posting");
@@ -176,7 +187,11 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                       <td className="px-2 py-3 sm:px-4">
                         <div className="flex flex-wrap gap-1.5">
                           {post.drafts.map((draft) => (
-                            <Badge key={draft.platformId} tone={TONE_BY_STATUS[draft.status]}>
+                            <Badge
+                              key={draft.platformId}
+                              tone={TONE_BY_STATUS[draft.status]}
+                              title={draft.status === "failed" ? draft.error ?? undefined : undefined}
+                            >
                               {platformById(draft.platformId)?.name ?? draft.platformId} · {STATUS_LABELS[draft.status]}
                             </Badge>
                           ))}
@@ -214,13 +229,17 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                             }
 
                             if (draft.imageBase64) {
+                              const postUrl =
+                                draft.status === "posted" && draft.externalPostId
+                                  ? externalPostUrl(platformName, draft.externalPostId)
+                                  : undefined;
                               return (
                                 <a
                                   key={draft.platformId}
-                                  href={`data:image/png;base64,${draft.imageBase64}`}
+                                  href={postUrl ?? `data:image/png;base64,${draft.imageBase64}`}
                                   target="_blank"
                                   rel="noreferrer"
-                                  title={`Open the image posted to ${platformName}`}
+                                  title={postUrl ? `Open the live post on ${platformName}` : `Open the image posted to ${platformName}`}
                                   className="block h-8 w-8 shrink-0 overflow-hidden rounded border border-outline-variant dark:border-white/15 transition-opacity hover:opacity-80"
                                 >
                                   {/* eslint-disable-next-line @next/next/no-img-element -- data: URL thumbnail, next/image can't optimize these. */}
@@ -246,8 +265,17 @@ export function PostHistoryTable({ posts }: { posts: Post[] }) {
                       </td>
                       <td className="px-2 py-3 sm:px-4">
                         <div className="flex justify-end gap-1">
-                          {post.drafts.some((d) => d.status === "draft") && (
-                            <IconButton label={`Post ${type?.label ?? "post"} now`} onClick={() => submitPost(post.id)}>
+                          {post.drafts.some(
+                            (d) => (d.status === "draft" || d.status === "ready" || d.status === "failed") && d.imageBase64
+                          ) && (
+                            <IconButton
+                              label={
+                                post.drafts.some((d) => d.status === "failed")
+                                  ? `Retry ${type?.label ?? "post"}`
+                                  : `Post ${type?.label ?? "post"} now`
+                              }
+                              onClick={() => submitPost(post.id)}
+                            >
                               <SendIcon className="h-4 w-4" />
                             </IconButton>
                           )}

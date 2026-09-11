@@ -14,11 +14,13 @@ import { LinkedInConnector } from './connectors/linkedin.connector.js';
 import { FacebookConnector } from './connectors/facebook.connector.js';
 import { GenericConnector } from './connectors/generic.connector.js';
 import { ConnectorService } from './connectors/connector.service.js';
+import { LinkedInOAuthController } from './oauth/linkedin-oauth.controller.js';
+import { LinkedInOAuthService } from './oauth/linkedin-oauth.service.js';
 let PlatformsModule = class PlatformsModule {
 };
 PlatformsModule = __decorate([
     Module({
-        controllers: [PlatformsController],
+        controllers: [PlatformsController, LinkedInOAuthController],
         providers: [
             PrismaService,
             EncryptionService,
@@ -32,6 +34,7 @@ PlatformsModule = __decorate([
             },
             ConnectorService,
             PlatformsService,
+            LinkedInOAuthService,
         ],
         exports: [PlatformsService, PrismaService, EncryptionService],
     })

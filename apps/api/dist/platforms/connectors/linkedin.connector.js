@@ -6,15 +6,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Injectable } from '@nestjs/common';
 import { ProviderError, ProviderNotConfiguredException } from '../../common/provider-exceptions.js';
-const LINKEDIN_VERSION = '202401';
+const LINKEDIN_VERSION = '202608';
 let LinkedInConnector = class LinkedInConnector {
     key = 'linkedin';
     async connect({ credentials }) {
         const accessToken = credentials['access-token'];
-        const orgUrn = credentials['organization-urn'];
-        if (!accessToken || !orgUrn) {
+        const authorUrn = credentials['organization-urn'];
+        if (!accessToken || !authorUrn) {
             throw new ProviderNotConfiguredException("LinkedIn isn't configured yet — add an Access Token and Organization URN to the LinkedIn platform in Add Platform.");
         }
+        if (authorUrn.startsWith('urn:li:person:')) {
+            return this.connectAsPerson(accessToken, authorUrn);
+        }
+        return this.connectAsOrganization(accessToken, authorUrn);
+    }
+    async connectAsOrganization(accessToken, orgUrn) {
         const orgId = orgUrn.split(':').pop();
         const response = await fetch(`https://api.linkedin.com/rest/organizations/${orgId}`, {
             headers: {
@@ -36,6 +42,27 @@ let LinkedInConnector = class LinkedInConnector {
                     name,
                     handle: body.vanityName ? `@${body.vanityName}` : `@${orgId}`,
                     type: 'Page',
+                    followers: 0,
+                },
+            ],
+        };
+    }
+    async connectAsPerson(accessToken, personUrn) {
+        const response = await fetch('https://api.linkedin.com/v2/userinfo', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!response.ok) {
+            const text = await response.text().catch(() => '');
+            throw new ProviderError(`LinkedIn profile lookup failed (${response.status}): ${text.slice(0, 300)}`);
+        }
+        const body = (await response.json());
+        return {
+            accounts: [
+                {
+                    externalId: personUrn,
+                    name: body.name ?? 'LinkedIn member',
+                    handle: `@${body.given_name ?? 'member'}`,
+                    type: 'Profile',
                     followers: 0,
                 },
             ],

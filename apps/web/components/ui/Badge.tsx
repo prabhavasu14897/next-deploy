@@ -19,9 +19,11 @@ const TONE_PROPS = {
  *  vocabulary; this is the plain generic version. */
 export function Badge({
   tone = "neutral",
+  title,
   children,
 }: {
   tone?: keyof typeof TONE_PROPS;
+  title?: string;
   children: React.ReactNode;
 }) {
   const { variant, className } = TONE_PROPS[tone];
@@ -29,6 +31,7 @@ export function Badge({
     <LibBadge
       variant={variant}
       shape="circle"
+      title={title}
       className={`h-6 shrink-0 whitespace-nowrap px-2.5 text-[12px] font-semibold ${className}`}
     >
       {children}

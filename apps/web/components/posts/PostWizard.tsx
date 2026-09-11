@@ -46,8 +46,14 @@ export function PostWizard({
 
   const activePost = activePostId ? state.posts.find((p) => p.id === activePostId) ?? null : null;
   const organizationName = organizations.find((o) => o.id === organizationId)?.name ?? "";
+  // Generation (image + caption + hashtags) is async and takes a few
+  // seconds — without this, "Continue"/the step pills were only gated on a
+  // post existing, so clicking through fast landed on Preview/Publish with
+  // nothing actually ready yet, a confusing dead end.
+  const hasReadyDraft = activePost?.drafts.some((d) => d.status === "ready") ?? false;
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
+  const editorIndex = STEPS.findIndex((s) => s.id === "editor");
 
   function resetForNewPost() {
     setStep("type");
@@ -115,12 +121,17 @@ export function PostWizard({
   return (
     <div className="space-y-6">
       <ol className="flex flex-wrap items-center gap-1.5">
-        {STEPS.map((s, i) => (
+        {STEPS.map((s, i) => {
+          // Jumping ahead to the Editor just needs a post to exist (that's
+          // where generation-in-progress is watched); jumping past it to
+          // Preview/Publish needs generation to have actually finished.
+          const meetsStepGate = i <= editorIndex ? !!activePost : hasReadyDraft;
+          return (
           <li key={s.id} className="flex items-center gap-1.5">
             <button
               type="button"
-              disabled={i > stepIndex && !activePost}
-              onClick={() => (i <= stepIndex || activePost) && setStep(s.id)}
+              disabled={i > stepIndex && !meetsStepGate}
+              onClick={() => (i <= stepIndex || meetsStepGate) && setStep(s.id)}
               aria-current={s.id === step ? "step" : undefined}
               className={`h-7 rounded-full px-3 text-[12px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                 s.id === step
@@ -134,7 +145,8 @@ export function PostWizard({
             </button>
             {i < STEPS.length - 1 && <ChevronRightIcon className="h-3.5 w-3.5 text-on-surface-variant" />}
           </li>
-        ))}
+          );
+        })}
       </ol>
 
       <div className="rounded-lg border border-outline-variant dark:border-white/15 bg-surface-container-low dark:bg-white/[0.02] p-5">
@@ -205,7 +217,7 @@ export function PostWizard({
           <Button
             variant="primary"
             size="md"
-            disabled={step === "type" ? !canLeaveType : !activePost}
+            disabled={step === "type" ? !canLeaveType : step === "editor" || step === "preview" ? !hasReadyDraft : !activePost}
             onClick={goNext}
           >
             Continue

@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ProviderError, ProviderNotConfiguredException } from '../../common/provider-exceptions.js';
 import type { PublishInput, PublishProvider, PublishResult } from '../publish-provider.interface.js';
 
-// LinkedIn revs this quarterly (YYYYMM) — bump to whatever's current when
-// real tokens are tested against it.
-const LINKEDIN_VERSION = '202401';
+// LinkedIn supports each version for a minimum of 2 years from release —
+// bump this periodically; 202401 was confirmed expired (426
+// NONEXISTENT_VERSION) when real tokens were first tested against it.
+const LINKEDIN_VERSION = '202608';
 
 @Injectable()
 export class LinkedInProvider implements PublishProvider {

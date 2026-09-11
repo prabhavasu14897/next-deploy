@@ -125,6 +125,10 @@ interface PlatformsContextValue {
   integrationFor: (id: string) => PlatformIntegrationConfig | undefined;
   /** Demo-only: appends sample platforms locally, bypassing the API. */
   seedDemoPlatforms: () => void;
+  /** Re-fetches the real catalog — e.g. after a redirect back from an
+   *  out-of-band flow like Connect with LinkedIn's OAuth exchange, where
+   *  the server-side state changed without this tab making the request. */
+  refetch: () => Promise<void>;
 }
 
 const PlatformsContext = createContext<PlatformsContextValue | null>(null);
@@ -252,8 +256,8 @@ export function PlatformsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<PlatformsContextValue>(
-    () => ({ state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms }),
-    [state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms]
+    () => ({ state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms, refetch }),
+    [state, createPlatform, updatePlatform, deletePlatform, platformById, integrationFor, seedDemoPlatforms, refetch]
   );
 
   return <PlatformsContext.Provider value={value}>{children}</PlatformsContext.Provider>;
